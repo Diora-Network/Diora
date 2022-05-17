@@ -1,5 +1,7 @@
 # Diora Network
 
+https://user-images.githubusercontent.com/49777543/168764160-121147ce-78c3-4e77-a020-5e03df8e6e06.mp4
+
 Fully EVM compatible parachain built on Substrate for Kusama and Polkadot
 
 ## Devnet Chain Specs
