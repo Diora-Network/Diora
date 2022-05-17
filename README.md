@@ -41,11 +41,3 @@ The dev node also supports the use of the following flags
 ```
 $  --dev --manual-seal
 ```
-
-
-
-
-### Step 4: Check Bob Contract Storage
-
-After the extrinsic has finalized, use the `Chain State` app to query `evm > accountStorage` to see
-the ERC-20 balances for both Alice and Bob.
