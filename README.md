@@ -2,11 +2,11 @@
 
 https://user-images.githubusercontent.com/49777543/168764160-121147ce-78c3-4e77-a020-5e03df8e6e06.mp4
 
-Fully EVM compatible parachain built on Substrate for Kusama and Polkadot
+Diora Network is a incentivised smart contract parachain, utilizing advanced PoSM with Double Validation & Randomization for security guarantees
 
 ## Devnet Chain Specs
 
-The Devnet is a early access live testnet used to showcase diora's products during polkadot hackathon 2022
+The Devnet is a public early access testnet to validate the technical architecture and security of our blockchain in a setting that is as realistic as possible.
 
 Chain ID
 ```
@@ -15,7 +15,7 @@ Chain ID
 RPC
 
 ```
-https://test.diora.network/
+https://testnet.diora.network/
 ```
 
 ## Run Single Development Node
@@ -43,3 +43,5 @@ The dev node also supports the use of the following flags
 ```
 $  --dev --manual-seal
 ```
+
+
