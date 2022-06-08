@@ -29,7 +29,7 @@ flume = "0.10.9"
 jsonrpc-core = "18.0.0"
 
 # Local Dependencies
-nimbus-consensus = { path = "../nimbus-consensus" }
+nimbus-consensus = { path = "./nimbus-consensus" }
 nimbus-primitives = { path = "./nimbus-primitives" }
 parachain-template-runtime = { path = "../runtime" }
 
