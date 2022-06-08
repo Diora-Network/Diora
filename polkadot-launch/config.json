@@ -22,6 +22,7 @@
 			"balance": "1000000000000000000000",
 			"nodes": [
 				{
+					"rpcPort": 9933,
 					"wsPort": 9944,
 					"name": "alice",
 					"port": 31200,
