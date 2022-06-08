@@ -1,8 +1,8 @@
 [package]
-name = "parachain-template-node"
+name = "Diora Devnet"
 authors = [ "Anonymous" ]
 build = "build.rs"
-description = "A Substrate node that demonstrates using the Nimbus consensus framework with instant seal and as a parachain."
+description = "A Substrate node using the Nimbus consensus framework with instant seal and as a parachain."
 edition = "2021"
 homepage = "https://substrate.dev"
 license = "Unlicense"
@@ -29,8 +29,8 @@ flume = "0.10.9"
 jsonrpc-core = "18.0.0"
 
 # Local Dependencies
-nimbus-consensus = { path = "../../nimbus-consensus" }
-nimbus-primitives = { path = "../../nimbus-primitives" }
+nimbus-consensus = { path = "../nimbus-consensus" }
+nimbus-primitives = { path = "../nimbus-primitives" }
 parachain-template-runtime = { path = "../runtime" }
 
 # Substrate Dependencies
