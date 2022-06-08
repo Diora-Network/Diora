@@ -5,7 +5,7 @@
 		"nodes": [
 			{
 				"name": "alice",
-				"wsPort": 9944,
+				"wsPort": 9943,
 				"port": 30444
 			},
 			{
@@ -17,12 +17,12 @@
 	},
 	"parachains": [
 		{
-			"bin": "../target/release/parachain-collator",
+			"bin": "../target/release/diora",
 			"id": "200",
 			"balance": "1000000000000000000000",
 			"nodes": [
 				{
-					"wsPort": 9988,
+					"wsPort": 9944,
 					"name": "alice",
 					"port": 31200,
 					"flags": [
