@@ -30,7 +30,7 @@ jsonrpc-core = "18.0.0"
 
 # Local Dependencies
 nimbus-consensus = { path = "../nimbus-consensus" }
-nimbus-primitives = { path = "/nimbus-primitives" }
+nimbus-primitives = { path = "./nimbus-primitives" }
 parachain-template-runtime = { path = "../runtime" }
 
 # Substrate Dependencies
