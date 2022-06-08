@@ -5976,7 +5976,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "parachain-template-node"
+name = "diora-node"
 version = "0.9.0"
 dependencies = [
  "clap",
@@ -6000,7 +6000,7 @@ dependencies = [
  "nimbus-consensus",
  "nimbus-primitives",
  "pallet-transaction-payment-rpc",
- "parachain-template-runtime",
+ "diora-runtime",
  "parity-scale-codec",
  "polkadot-cli",
  "polkadot-parachain",
@@ -6041,7 +6041,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "parachain-template-runtime"
+name = "diora-runtime"
 version = "0.9.0"
 dependencies = [
  "cumulus-pallet-dmp-queue",

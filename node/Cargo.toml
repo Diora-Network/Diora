@@ -1,19 +1,19 @@
 [package]
-name = "DioraDevnet"
+name = "Diora"
 authors = [ "Anonymous" ]
 build = "build.rs"
 description = "A Substrate node using the Nimbus consensus framework with instant seal and as a parachain."
 edition = "2021"
-homepage = "https://substrate.dev"
+homepage = "https://diora.network"
 license = "Unlicense"
-repository = "https://github.com/paritytech/cumulus/"
+repository = "https://diora.network/"
 version = "0.9.0"
 
 [package.metadata.docs.rs]
 targets = [ "x86_64-unknown-linux-gnu" ]
 
 [[bin]]
-name = "parachain-collator"
+name = "diora"
 path = "src/main.rs"
 
 [dependencies]
@@ -31,7 +31,7 @@ jsonrpc-core = "18.0.0"
 # Local Dependencies
 nimbus-consensus = { path = "./nimbus-consensus" }
 nimbus-primitives = { path = "../node/nimbus-primitives" }
-parachain-template-runtime = { path = "../runtime" }
+diora-runtime = { path = "../runtime" }
 
 # Substrate Dependencies
 frame-benchmarking = { git = "https://github.com/paritytech/substrate", branch = "master" }
@@ -97,5 +97,5 @@ polkadot-test-service = { git = "https://github.com/paritytech/polkadot", branch
 substrate-build-script-utils = { git = "https://github.com/paritytech/substrate", branch = "master" }
 
 [features]
-runtime-benchmarks = [ "parachain-template-runtime/runtime-benchmarks" ]
-try-runtime = [ "parachain-template-runtime/try-runtime" ]
+runtime-benchmarks = [ "diora-runtime/runtime-benchmarks" ]
+try-runtime = [ "diora-runtime/try-runtime" ]
