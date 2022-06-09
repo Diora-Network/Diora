@@ -18,7 +18,7 @@ scale-info = { version = "2.0.0", default-features = false, features = [ "derive
 serde = { version = "1.0.119", optional = true, features = [ "derive" ] }
 smallvec = "1.6.1"
 
-# Local Dependencies
+# Diora Dependencies
 pallet-template = { path = "../pallets/template", default-features = false }
 
 # Substrate Dependencies
@@ -68,6 +68,7 @@ nimbus-primitives = { path = "../node/nimbus-primitives", default-features = fal
 pallet-author-inherent = { path = "../pallets/author-inherent", default-features = false }
 pallet-author-slot-filter = { path = "../pallets/author-slot-filter", default-features = false }
 
+# Frontier Dependencies
 
 # Polkadot Dependencies
 pallet-xcm = { git = "https://github.com/paritytech/polkadot", branch = "master", default-features = false }
