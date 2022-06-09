@@ -5,7 +5,7 @@
 		"nodes": [
 			{
 				"name": "alice",
-				"wsPort": 9943,
+				"wsPort": 9944,
 				"port": 30444
 			},
 			{
@@ -22,8 +22,7 @@
 			"balance": "1000000000000000000000",
 			"nodes": [
 				{
-					"rpcPort": 9933,
-					"wsPort": 9944,
+					"wsPort": 9945,
 					"name": "alice",
 					"port": 31200,
 					"flags": [
