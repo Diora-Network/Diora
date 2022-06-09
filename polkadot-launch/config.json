@@ -10,7 +10,7 @@
 			},
 			{
 				"name": "bob",
-				"wsPort": 9955,
+				"wsPort": 9995,
 				"port": 30555
 			}
 		]
