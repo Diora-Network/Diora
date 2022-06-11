@@ -45,7 +45,19 @@ $  --dev --manual-seal
 ```
 
 # Run Parachain
+
+# Build polkadot
+cd polkadot
+cargo build --release
+cd ..
+
+# Build Diora
+cd diora
+git checkout master
+cargo build --release
+
+# Launch the multi-chain
 polkdot-launch ./diora/polkadot-launch/config.json
 ```
 
-To learn more about launching relay-para networks, check out the [cumulus workshop](https://substrate.dev/cumulus-workshop).
+
