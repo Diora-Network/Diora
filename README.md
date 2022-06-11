@@ -44,4 +44,8 @@ The dev node also supports the use of the following flags
 $  --dev --manual-seal
 ```
 
+# Run Parachain
+polkdot-launch ./diora/polkadot-launch/config.json
+```
 
+To learn more about launching relay-para networks, check out the [cumulus workshop](https://substrate.dev/cumulus-workshop).
