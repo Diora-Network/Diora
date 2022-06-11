@@ -60,9 +60,9 @@ pub fn development_config() -> ChainSpec {
 
 	ChainSpec::from_genesis(
 		// Name
-		"Development",
+		"Rococo Testnet",
 		// ID
-		"dev",
+		"roc",
 		ChainType::Development,
 		move || {
 			testnet_genesis(
