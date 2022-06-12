@@ -18,45 +18,29 @@ RPC
 https://testnet.diora.network/
 ```
 
-## Run Single Development Node
+## Launch a local setup including a Relay Chain and a Parachain
 
-To build the chain, execute the following commands from the project root:
-
-Clone Diora
+* polkadot & diora
 ```
-$ git clone 
-```
-Build from binary 
-
-```
-$ cargo build --release
-```
-
-To execute the chain, run:
-
-```
-$ ./target/release/diora --dev
-```
-
-The dev node also supports the use of the following flags
-
-```
-$  --dev --manual-seal
-```
-
-# Run Parachain
-
-# Build polkadot
-```
-cd polkadot
+# Compile Polkadot
+git clone https://github.com/paritytech/polkadot
+git checkout release-v0.9.20
 cargo build --release
-cd ..
 
-# Build Diora
-```
-cd diora
-git checkout master
+# Compile Diora
+https://github.com/Diora-Network/Diora
 cargo build --release
+```
+By shell 
+
+```
+cd script
+bash ./build.sh
+bash ./start-all.sh
+# log
+tail -f data/log.2022
+```
+After the relay chain produces 10 blocks, the parachain starts producing blocks
 
 # Launch the multi-chain
 ```
