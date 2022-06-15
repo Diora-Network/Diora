@@ -80,7 +80,7 @@ mkdir data
 
 echo "build diora chainspec"
 
-./diora build-spec --disable-default-bootnode --chain dev >  ./config/diora-dev.json
+./diora build-spec --disable-default-bootnode --chain rococo >  ./config/diora-dev.json
 ./diora export-genesis-state --chain ./config/diora-dev.json > ./config/diora-dev.genesis
 ./diora export-genesis-wasm --chain ./config/diora-dev.json > ./config/diora-dev.wasm
 
