@@ -187,5 +187,8 @@ fn testnet_genesis(
 			mapping: authorities,
 		},
 		parachain_system: Default::default(),
+		evm: Default::default(),
+		ethereum: Default::default(),
+		base_fee: Default::default(),
 	}
 }
