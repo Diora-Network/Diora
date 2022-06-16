@@ -1,5 +1,5 @@
 use cumulus_primitives_core::ParaId;
-use diora_runtime::{AccountId, NimbusId, Signature};
+use parachain_template_runtime::{AccountId, NimbusId, Signature};
 use sc_chain_spec::{ChainSpecExtension, ChainSpecGroup};
 use sc_service::ChainType;
 use serde::{Deserialize, Serialize};
@@ -8,7 +8,7 @@ use sp_runtime::traits::{IdentifyAccount, Verify};
 
 /// Specialized `ChainSpec` for the normal parachain runtime.
 pub type ChainSpec =
-	sc_service::GenericChainSpec<diora_runtime::GenesisConfig, Extensions>;
+	sc_service::GenericChainSpec<parachain_template_runtime::GenesisConfig, Extensions>;
 
 /// Helper function to generate a crypto pair from seed
 pub fn get_pair_from_seed<TPublic: Public>(seed: &str) -> <TPublic::Pair as Pair>::Public {
@@ -54,8 +54,8 @@ where
 pub fn development_config() -> ChainSpec {
 	// Give your base currency a unit name and decimal places
 	let mut properties = sc_chain_spec::Properties::new();
-	properties.insert("tokenSymbol".into(), "DIR".into());
-	properties.insert("tokenDecimals".into(), 18.into());
+	properties.insert("tokenSymbol".into(), "ROC".into());
+	properties.insert("tokenDecimals".into(), 12.into());
 	properties.insert("ss58Format".into(), 42.into());
 
 	ChainSpec::from_genesis(
@@ -94,8 +94,8 @@ pub fn development_config() -> ChainSpec {
 		None,
 		None,
 		Extensions {
-			relay_chain: "rococo".into(), // You MUST set this to the correct network!
-			para_id: 2000,
+			relay_chain: "rococo-local".into(), // You MUST set this to the correct network!
+			para_id: 1000,
 		},
 	)
 }
@@ -103,8 +103,8 @@ pub fn development_config() -> ChainSpec {
 pub fn local_testnet_config() -> ChainSpec {
 	// Give your base currency a unit name and decimal places
 	let mut properties = sc_chain_spec::Properties::new();
-	properties.insert("tokenSymbol".into(), "DIR".into());
-	properties.insert("tokenDecimals".into(), 18.into());
+	properties.insert("tokenSymbol".into(), "ROC".into());
+	properties.insert("tokenDecimals".into(), 12.into());
 	properties.insert("ss58Format".into(), 42.into());
 
 	ChainSpec::from_genesis(
@@ -155,8 +155,8 @@ pub fn local_testnet_config() -> ChainSpec {
 		Some(properties),
 		// Extensions
 		Extensions {
-			relay_chain: "rococo".into(), // You MUST set this to the correct network!
-			para_id: 2000,
+			relay_chain: "rococo-local".into(), // You MUST set this to the correct network!
+			para_id: 1000,
 		},
 	)
 }
@@ -165,64 +165,27 @@ fn testnet_genesis(
 	authorities: Vec<(AccountId, NimbusId)>,
 	endowed_accounts: Vec<AccountId>,
 	id: ParaId,
-) -> diora_runtime::GenesisConfig {
-	diora_runtime::GenesisConfig {
-		system: diora_runtime::SystemConfig {
-			code: diora_runtime::WASM_BINARY
+) -> parachain_template_runtime::GenesisConfig {
+	parachain_template_runtime::GenesisConfig {
+		system: parachain_template_runtime::SystemConfig {
+			code: parachain_template_runtime::WASM_BINARY
 				.expect("WASM binary was not build, please build it!")
 				.to_vec(),
 		},
-		balances: diora_runtime::BalancesConfig {
+		balances: parachain_template_runtime::BalancesConfig {
 			balances: endowed_accounts
 				.iter()
 				.cloned()
 				.map(|k| (k, 1 << 60))
 				.collect(),
 		},
-		parachain_info: diora_runtime::ParachainInfoConfig { parachain_id: id },
-				ethereum_chain_id: EthereumChainIdConfig { chain_id },
-		evm: EVMConfig {
-			// We need _some_ code inserted at the precompile address so that
-			// the evm will actually call the address.
-			accounts: Precompiles::used_addresses()
-				.map(|addr| {
-					(
-						addr.into(),
-						GenesisAccount {
-							nonce: Default::default(),
-							balance: Default::default(),
-							storage: Default::default(),
-							code: revert_bytecode.clone(),
-						},
-					)
-				})
-				.collect(),
+		parachain_info: parachain_template_runtime::ParachainInfoConfig { parachain_id: id },
+		author_filter: parachain_template_runtime::AuthorFilterConfig {
+			eligible_count: parachain_template_runtime::EligibilityValue::default(),
 		},
-		ethereum: EthereumConfig {},
-		base_fee: BaseFeeConfig::new(
-			U256::from(1_000_000_000u64),
-			false,
-			Permill::from_parts(125_000),
-		),
-		democracy: DemocracyConfig::default(),
-		parachain_staking: ParachainStakingConfig {
-			candidates: candidates
-				.iter()
-				.cloned()
-				.map(|(account, _, bond)| (account, bond))
-				.collect(),
-			delegations,
-		council_collective: CouncilCollectiveConfig {
-			phantom: Default::default(),
-			members: council_members,
-		},
-		author_filter: diora_runtime::AuthorFilterConfig {
-			eligible_count: diora_runtime::EligibilityValue::default(),
-		},
-		potential_author_set: diora_runtime::PotentialAuthorSetConfig {
+		potential_author_set: parachain_template_runtime::PotentialAuthorSetConfig {
 			mapping: authorities,
 		},
-		treasury: Default::default(),
 		parachain_system: Default::default(),
 	}
 }
