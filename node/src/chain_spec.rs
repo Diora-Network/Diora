@@ -66,26 +66,24 @@ pub fn development_config() -> ChainSpec {
 		ChainType::Development,
 		move || {
 			testnet_genesis(
-				// initial collators.
+				// Alith is Sudo
+				accounts[0],
+				// Council members: Baltathar, Charleth and Dorothy
+				vec![accounts[1], accounts[2], accounts[3]],
+				// Tech comitee members: Alith and Baltathar
+				vec![accounts[0], accounts[1]],
+				// Collator Candidate: Alice -> Alith
 				vec![(
-					get_account_id_from_seed::<sr25519::Public>("Alice"),
-					get_collator_keys_from_seed("Alice"),
+					accounts[0],
+					get_from_seed::<NimbusId>("Alice"),
+					1_000 * UNIT,
 				)],
-				vec![
-					get_account_id_from_seed::<sr25519::Public>("Alice"),
-					get_account_id_from_seed::<sr25519::Public>("Bob"),
-					get_account_id_from_seed::<sr25519::Public>("Charlie"),
-					get_account_id_from_seed::<sr25519::Public>("Dave"),
-					get_account_id_from_seed::<sr25519::Public>("Eve"),
-					get_account_id_from_seed::<sr25519::Public>("Ferdie"),
-					get_account_id_from_seed::<sr25519::Public>("Alice//stash"),
-					get_account_id_from_seed::<sr25519::Public>("Bob//stash"),
-					get_account_id_from_seed::<sr25519::Public>("Charlie//stash"),
-					get_account_id_from_seed::<sr25519::Public>("Dave//stash"),
-					get_account_id_from_seed::<sr25519::Public>("Eve//stash"),
-					get_account_id_from_seed::<sr25519::Public>("Ferdie//stash"),
-				],
-				1000.into(),
+				// Delegations
+				vec![],
+				accounts.clone(),
+				3_000_000 * UNIT,
+				Default::default(), // para_id
+				201,               //ChainId
 			)
 		},
 		vec![],
