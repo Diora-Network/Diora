@@ -91,12 +91,6 @@ pub fn development_config() -> ChainSpec {
 		None,
 		None,
 		None,
-		Some(
-			serde_json::from_str(
-				"{\"tokenDecimals\": 18, \"tokenSymbol\": \"UNIT\", \"SS58Prefix\": 1287}",
-			)
-			.expect("Provided valid json map"),
-		),
 		Extensions {
 			relay_chain: "rococo".into(), // You MUST set this to the correct network!
 			para_id: 2000,
