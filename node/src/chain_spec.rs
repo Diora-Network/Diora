@@ -166,7 +166,8 @@ fn testnet_genesis(
 	authorities: Vec<(AccountId, NimbusId)>,
 	endowed_accounts: Vec<AccountId>,
 	id: ParaId,
-	diora_runtime::GenesisConfig {
+	) -> GenesisConfig {
+	GenesisConfig {
 		system: diora_runtime::SystemConfig {
 			code: diora_runtime::WASM_BINARY
 				.expect("WASM binary was not build, please build it!")
