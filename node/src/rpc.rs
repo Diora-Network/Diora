@@ -7,7 +7,6 @@
 
 use std::{collections::BTreeMap, sync::Arc};
 
-use jsonrpsee::RpcModule;
 // Substrate
 use sc_client_api::{
 	backend::{AuxStore, Backend, StateBackend, StorageProvider},
