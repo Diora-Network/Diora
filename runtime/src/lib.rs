@@ -671,7 +671,7 @@ pub const WEIGHT_PER_GAS: u64 = WEIGHT_PER_SECOND / GAS_PER_SECOND;
 
 
 parameter_types! {
-	pub const ChainId: u64 = 102;
+	pub const ChainId: u64 = 201;
     pub BlockGasLimit: U256
         = U256::from(NORMAL_DISPATCH_RATIO * MAXIMUM_BLOCK_WEIGHT / WEIGHT_PER_GAS);
     pub PrecompilesValue: DioraPrecompiles<Runtime> = DioraPrecompiles::<_>::new();
