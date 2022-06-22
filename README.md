@@ -39,6 +39,9 @@ bash ./build.sh
 bash ./start-all.sh
 # log
 tail -f data/log.2022
+
+# stop-all and remove data
+bash ./stop-all.sh
 ```
 After the relay chain produces 10 blocks, the parachain starts producing blocks
 

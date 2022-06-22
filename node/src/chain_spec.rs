@@ -60,17 +60,21 @@ pub fn development_config() -> ChainSpec {
 
 	ChainSpec::from_genesis(
 		// Name
-		"Rococo Testnet",
+		"Development",
 		// ID
-		"roc",
+		"dev",
 		ChainType::Development,
 		move || {
 			testnet_genesis(
 				// initial collators.
 				vec![(
-					get_account_id_from_seed::<sr25519::Public>("Alice"),
-					get_collator_keys_from_seed("Alice"),
-				)],
+						 get_account_id_from_seed::<sr25519::Public>("Alice"),
+						 get_collator_keys_from_seed("Alice"),
+					 ),
+					 (
+						 get_account_id_from_seed::<sr25519::Public>("Bob"),
+						 get_collator_keys_from_seed("Bob"),
+					 )],
 				vec![
 					get_account_id_from_seed::<sr25519::Public>("Alice"),
 					get_account_id_from_seed::<sr25519::Public>("Bob"),
@@ -85,14 +89,14 @@ pub fn development_config() -> ChainSpec {
 					get_account_id_from_seed::<sr25519::Public>("Eve//stash"),
 					get_account_id_from_seed::<sr25519::Public>("Ferdie//stash"),
 				],
-				1000.into(),
+				2000.into(),
 			)
 		},
 		vec![],
 		None,
 		None,
 		None,
-		None,
+		Some(properties),
 		Extensions {
 			relay_chain: "rococo".into(), // You MUST set this to the correct network!
 			para_id: 2000,
@@ -140,7 +144,7 @@ pub fn local_testnet_config() -> ChainSpec {
 					get_account_id_from_seed::<sr25519::Public>("Eve//stash"),
 					get_account_id_from_seed::<sr25519::Public>("Ferdie//stash"),
 				],
-				1000.into(),
+				2000.into(),
 			)
 		},
 		// Bootnodes
@@ -176,7 +180,7 @@ fn testnet_genesis(
 			balances: endowed_accounts
 				.iter()
 				.cloned()
-				.map(|k| (k, 1 << 60))
+				.map(|k| (k, 10_000_000_000_000_000_000_000))
 				.collect(),
 		},
 		parachain_info: diora_runtime::ParachainInfoConfig { parachain_id: id },
@@ -187,8 +191,13 @@ fn testnet_genesis(
 			mapping: authorities,
 		},
 		parachain_system: Default::default(),
+		ethereum_chain_id: diora_runtime::EthereumChainIdConfig { chain_id: 102u64 },
 		evm: Default::default(),
 		ethereum: Default::default(),
-		base_fee: Default::default(),
+		base_fee: diora_runtime::BaseFeeConfig::new(
+			diora_runtime::DefaultBaseFeePerGas::get(),
+			false,
+			sp_runtime::Permill::from_parts(125_000),
+		),
 	}
 }
