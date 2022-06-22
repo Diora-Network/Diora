@@ -67,6 +67,7 @@ parachain-info = { git = "https://github.com/paritytech/cumulus", branch = "polk
 nimbus-primitives = { path = "../node/nimbus-primitives", default-features = false }
 pallet-author-inherent = { path = "../pallets/author-inherent", default-features = false }
 pallet-author-slot-filter = { path = "../pallets/author-slot-filter", default-features = false }
+pallet-ethereum-chain-id = { path = "../pallets/ethereum-chain-id", default-features = false }
 
 # Frontier Dependencies
 fp-rpc = { git = "https://github.com/Diora-Network/frontier", branch = "polkadot-v0.9.20", default-features = false }
@@ -142,6 +143,7 @@ std = [
 	"xcm/std",
 	"pallet-evm/std",
 	"pallet-ethereum/std",
+	"pallet-ethereum-chain-id/std",
 	"pallet-base-fee/std",
 	"pallet-evm-precompile-simple/std",
 	"pallet-evm-precompile-sha3fips/std",

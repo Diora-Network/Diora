@@ -699,7 +699,7 @@ impl pallet_evm::Config for Runtime {
 	type Runner = pallet_evm::runner::stack::Runner<Self>;
 	type PrecompilesType = DioraPrecompiles<Runtime>;
 	type PrecompilesValue = PrecompilesValue;
-	type ChainId = ChainId;
+	type ChainId = EthereumChainId;
 	type OnChargeTransaction = ();
 	type BlockGasLimit = BlockGasLimit;
 	type FindAuthor = ();
@@ -710,6 +710,7 @@ impl pallet_ethereum::Config for Runtime {
 	type Event = Event;
 	type StateRoot = pallet_ethereum::IntermediateStateRoot<Self>;
 }
+impl pallet_ethereum_chain_id::Config for Runtime {}
 
 parameter_types! {
 	pub DefaultBaseFeePerGas: U256 = U256::from(450_000_000_000u128);
@@ -772,6 +773,7 @@ construct_runtime!(
 		TemplatePallet: pallet_template::{Pallet, Call, Storage, Event<T>}  = 40,
 
 		// Ethereum compatibility
+		EthereumChainId: pallet_ethereum_chain_id::{Pallet, Call, Storage, Config} = 50,
         Evm: pallet_evm::{Pallet, Config, Call, Storage, Event<T>} = 51,
         Ethereum: pallet_ethereum::{Pallet, Call, Storage, Event, Config, Origin} = 52,
         BaseFee: pallet_base_fee::{Pallet, Call, Storage, Config<T>, Event} = 54,
@@ -781,8 +783,8 @@ construct_runtime!(
 impl_runtime_apis! {
 	impl fp_rpc::EthereumRuntimeRPCApi<Block> for Runtime {
 		fn chain_id() -> u64 {
-			<Runtime as pallet_evm::Config>::ChainId::get()
-		}
+            <Runtime as pallet_evm::Config>::ChainId::chain_id()
+        }
 
 		fn account_basic(address: H160) -> EVMAccount {
 			let (account, _) = Evm::account_basic(&address);

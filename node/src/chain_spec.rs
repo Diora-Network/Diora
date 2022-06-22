@@ -68,9 +68,13 @@ pub fn development_config() -> ChainSpec {
 			testnet_genesis(
 				// initial collators.
 				vec![(
-					get_account_id_from_seed::<sr25519::Public>("Alice"),
-					get_collator_keys_from_seed("Alice"),
-				)],
+						 get_account_id_from_seed::<sr25519::Public>("Alice"),
+						 get_collator_keys_from_seed("Alice"),
+					 ),
+					 (
+						 get_account_id_from_seed::<sr25519::Public>("Bob"),
+						 get_collator_keys_from_seed("Bob"),
+					 )],
 				vec![
 					get_account_id_from_seed::<sr25519::Public>("Alice"),
 					get_account_id_from_seed::<sr25519::Public>("Bob"),
@@ -187,6 +191,7 @@ fn testnet_genesis(
 			mapping: authorities,
 		},
 		parachain_system: Default::default(),
+		ethereum_chain_id: diora_runtime::EthereumChainIdConfig { chain_id: 102u64 },
 		evm: Default::default(),
 		ethereum: Default::default(),
 		base_fee: diora_runtime::BaseFeeConfig::new(
