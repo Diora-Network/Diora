@@ -145,6 +145,7 @@ std = [
 	"pallet-base-fee/std",
 	"pallet-evm-precompile-simple/std",
 	"pallet-evm-precompile-sha3fips/std",
+	"fp-rpc/std",
 ]
 
 runtime-benchmarks = [

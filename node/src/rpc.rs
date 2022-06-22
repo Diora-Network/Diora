@@ -5,35 +5,37 @@
 
 #![warn(missing_docs)]
 
-use std::{collections::BTreeMap, sync::Arc};
+use std::sync::Arc;
 
-// Substrate
-use sc_client_api::{
-	backend::{AuxStore, Backend, StateBackend, StorageProvider},
-	client::BlockchainEvents,
-};
-#[cfg(feature = "manual-seal")]
-use sc_consensus_manual_seal::rpc::{ManualSeal, ManualSealApiServer};
-use sc_network::NetworkService;
-use sc_rpc::SubscriptionTaskExecutor;
-use sc_rpc_api::DenyUnsafe;
-use sc_service::TransactionPool;
-use sc_transaction_pool::{ChainApi, Pool};
+pub use sc_rpc_api::DenyUnsafe;
+use sc_transaction_pool_api::TransactionPool;
+use diora_runtime::{opaque::Block, AccountId, Balance, BlockNumber, Index,Hash};
 use sp_api::ProvideRuntimeApi;
 use sp_block_builder::BlockBuilder;
 use sp_blockchain::{Error as BlockChainError, HeaderBackend, HeaderMetadata};
-use sp_runtime::traits::BlakeTwo256;
-// Frontier
+
+// EVM
 use fc_rpc::{
 	EthBlockDataCacheTask, OverrideHandle, RuntimeApiStorageOverride, SchemaV1Override,
 	SchemaV2Override, SchemaV3Override, StorageOverride,
 };
-use fc_rpc_core::types::{FeeHistoryCache, FeeHistoryCacheLimit, FilterPool};
+use fc_rpc_core::types::{FeeHistoryCache, FilterPool};
 use fp_storage::EthereumStorageSchema;
-// Runtime
-use diora_runtime::{opaque::Block, AccountId, Balance, Hash, Index};
+use jsonrpc_pubsub::manager::SubscriptionManager;
+use sc_client_api::{
+	backend::{AuxStore, Backend, StateBackend, StorageProvider},
+	client::BlockchainEvents,
+};
+use sc_network::NetworkService;
+use sc_rpc::SubscriptionTaskExecutor;
+use sc_transaction_pool::{ChainApi, Pool};
+use sp_runtime::traits::BlakeTwo256;
+use std::collections::BTreeMap;
 
-/// Full client dependencies.
+/// A type representing all RPC extensions.
+pub type RpcExtension = jsonrpc_core::IoHandler<sc_rpc::Metadata>;
+
+/// Full client dependencies
 pub struct FullDeps<C, P, A: ChainApi> {
 	/// The client instance to use.
 	pub client: Arc<C>,
@@ -45,8 +47,6 @@ pub struct FullDeps<C, P, A: ChainApi> {
 	pub deny_unsafe: DenyUnsafe,
 	/// The Node authority flag
 	pub is_authority: bool,
-	/// Whether to enable dev signer
-	pub enable_dev_signer: bool,
 	/// Network service
 	pub network: Arc<NetworkService<Block, Hash>>,
 	/// EthFilterApi pool.
@@ -55,30 +55,26 @@ pub struct FullDeps<C, P, A: ChainApi> {
 	pub backend: Arc<fc_db::Backend<Block>>,
 	/// Maximum number of logs in a query.
 	pub max_past_logs: u32,
+	/// Maximum fee history cache size.
+	pub fee_history_limit: u64,
 	/// Fee history cache.
 	pub fee_history_cache: FeeHistoryCache,
-	/// Maximum fee history cache size.
-	pub fee_history_cache_limit: FeeHistoryCacheLimit,
 	/// Ethereum data access overrides.
 	pub overrides: Arc<OverrideHandle<Block>>,
 	/// Cache for Ethereum block data.
 	pub block_data_cache: Arc<EthBlockDataCacheTask<Block>>,
-	/// Manual seal command sink
-	#[cfg(feature = "manual-seal")]
-	pub command_sink:
-		Option<futures::channel::mpsc::Sender<sc_consensus_manual_seal::rpc::EngineCommand<Hash>>>,
 }
 
 pub fn overrides_handle<C, BE>(client: Arc<C>) -> Arc<OverrideHandle<Block>>
-where
-	C: ProvideRuntimeApi<Block> + StorageProvider<Block, BE> + AuxStore,
-	C: HeaderBackend<Block> + HeaderMetadata<Block, Error = BlockChainError>,
-	C: Send + Sync + 'static,
-	C::Api: sp_api::ApiExt<Block>
+	where
+		C: ProvideRuntimeApi<Block> + StorageProvider<Block, BE> + AuxStore,
+		C: HeaderBackend<Block> + HeaderMetadata<Block, Error = BlockChainError>,
+		C: Send + Sync + 'static,
+		C::Api: sp_api::ApiExt<Block>
 		+ fp_rpc::EthereumRuntimeRPCApi<Block>
 		+ fp_rpc::ConvertTransactionRuntimeApi<Block>,
-	BE: Backend<Block> + 'static,
-	BE::State: StateBackend<BlakeTwo256>,
+		BE: Backend<Block> + 'static,
+		BE::State: StateBackend<BlakeTwo256>,
 {
 	let mut overrides_map = BTreeMap::new();
 	overrides_map.insert(
@@ -107,121 +103,116 @@ where
 pub fn create_full<C, P, BE, A>(
 	deps: FullDeps<C, P, A>,
 	subscription_task_executor: SubscriptionTaskExecutor,
-) -> Result<RpcModule<()>, Box<dyn std::error::Error + Send + Sync>>
-where
-	BE: Backend<Block> + 'static,
-	BE::State: StateBackend<BlakeTwo256>,
-	C: ProvideRuntimeApi<Block> + StorageProvider<Block, BE> + AuxStore,
-	C: BlockchainEvents<Block>,
-	C: HeaderBackend<Block> + HeaderMetadata<Block, Error = BlockChainError>,
-	C: Send + Sync + 'static,
-	C::Api: substrate_frame_rpc_system::AccountNonceApi<Block, AccountId, Index>,
-	C::Api: BlockBuilder<Block>,
-	C::Api: pallet_transaction_payment_rpc::TransactionPaymentRuntimeApi<Block, Balance>,
-	C::Api: fp_rpc::ConvertTransactionRuntimeApi<Block>,
-	C::Api: fp_rpc::EthereumRuntimeRPCApi<Block>,
-	P: TransactionPool<Block = Block> + 'static,
-	A: ChainApi<Block = Block> + 'static,
+) -> jsonrpc_core::IoHandler<sc_rpc::Metadata>
+	where
+		BE: Backend<Block> + 'static,
+		BE::State: StateBackend<BlakeTwo256>,
+		C: ProvideRuntimeApi<Block> + StorageProvider<Block, BE> + AuxStore,
+		C: BlockchainEvents<Block>,
+		C: HeaderBackend<Block> + HeaderMetadata<Block, Error = BlockChainError>,
+		C: Send + Sync + 'static,
+		C::Api: substrate_frame_rpc_system::AccountNonceApi<Block, AccountId, Index>,
+		C::Api: BlockBuilder<Block>,
+		C::Api: pallet_transaction_payment_rpc::TransactionPaymentRuntimeApi<Block, Balance>,
+		C::Api: fp_rpc::ConvertTransactionRuntimeApi<Block>,
+		C::Api: fp_rpc::EthereumRuntimeRPCApi<Block>,
+		P: TransactionPool<Block = Block> + 'static,
+		A: ChainApi<Block = Block> + 'static,
 {
-	use fc_rpc::{
-		Eth, EthApiServer, EthDevSigner, EthFilter, EthFilterApiServer, EthPubSub,
-		EthPubSubApiServer, EthSigner, Net, NetApiServer, Web3, Web3ApiServer,
-	};
-	use pallet_transaction_payment_rpc::{TransactionPayment, TransactionPaymentApiServer};
-	use substrate_frame_rpc_system::{System, SystemApiServer};
+	use pallet_transaction_payment_rpc::{TransactionPayment, TransactionPaymentApi};
+	use substrate_frame_rpc_system::{FullSystem, SystemApi};
 
-	let mut io = RpcModule::new(());
+	let mut io = jsonrpc_core::IoHandler::default();
+
 	let FullDeps {
 		client,
 		pool,
 		graph,
 		deny_unsafe,
 		is_authority,
-		enable_dev_signer,
 		network,
 		filter_pool,
 		backend,
 		max_past_logs,
+		fee_history_limit,
 		fee_history_cache,
-		fee_history_cache_limit,
 		overrides,
 		block_data_cache,
-		#[cfg(feature = "manual-seal")]
-		command_sink,
 	} = deps;
 
-	io.merge(System::new(client.clone(), pool.clone(), deny_unsafe).into_rpc())?;
-	io.merge(TransactionPayment::new(client.clone()).into_rpc())?;
+	io.extend_with(SystemApi::to_delegate(FullSystem::new(
+		client.clone(),
+		pool.clone(),
+		deny_unsafe,
+	)));
 
-	let mut signers = Vec::new();
-	if enable_dev_signer {
-		signers.push(Box::new(EthDevSigner::new()) as Box<dyn EthSigner>);
-	}
+	io.extend_with(TransactionPaymentApi::to_delegate(TransactionPayment::new(
+		client.clone(),
+	)));
 
-	io.merge(
-		Eth::new(
+	// eth api
+	{
+		use fc_rpc::{
+			Eth, EthApi, EthDevSigner, EthFilter, EthFilterApi, EthPubSub, EthPubSubApi, EthSigner,
+			HexEncodedIdProvider, Net, NetApi, Web3, Web3Api,
+		};
+		enum Never {}
+		impl<T> fp_rpc::ConvertTransaction<T> for Never {
+			fn convert_transaction(&self, _transaction: pallet_ethereum::Transaction) -> T {
+				// The Never type is not instantiable, but this method requires the type to be
+				// instantiated to be called (`&self` parameter), so if the code compiles we have the
+				// guarantee that this function will never be called.
+				unreachable!()
+			}
+		}
+		let convert_transaction: Option<Never> = None;
+		io.extend_with(EthApi::to_delegate(Eth::new(
 			client.clone(),
 			pool.clone(),
 			graph,
-			Some(frontier_template_runtime::TransactionConverter),
+			Some(diora_runtime::TransactionConverter),
 			network.clone(),
-			signers,
+			Vec::new(),
 			overrides.clone(),
 			backend.clone(),
-			// Is authority.
 			is_authority,
 			block_data_cache.clone(),
+			fc_rpc::format::Geth,
 			fee_history_cache,
-			fee_history_cache_limit,
-		)
-		.into_rpc(),
-	)?;
+			fee_history_limit,
+		)));
 
-	if let Some(filter_pool) = filter_pool {
-		io.merge(
-			EthFilter::new(
+		if let Some(filter_pool) = filter_pool {
+			io.extend_with(EthFilterApi::to_delegate(EthFilter::new(
 				client.clone(),
 				backend,
 				filter_pool,
 				500_usize, // max stored filters
 				max_past_logs,
 				block_data_cache,
-			)
-			.into_rpc(),
-		)?;
-	}
+			)));
+		}
 
-	io.merge(
-		EthPubSub::new(
-			pool,
+		io.extend_with(NetApi::to_delegate(Net::new(
 			client.clone(),
 			network.clone(),
-			subscription_task_executor,
-			overrides,
-		)
-		.into_rpc(),
-	)?;
-
-	io.merge(
-		Net::new(
-			client.clone(),
-			network,
 			// Whether to format the `peer_count` response as Hex (default) or not.
 			true,
-		)
-		.into_rpc(),
-	)?;
+		)));
 
-	io.merge(Web3::new(client).into_rpc())?;
+		io.extend_with(Web3Api::to_delegate(Web3::new(client.clone())));
 
-	#[cfg(feature = "manual-seal")]
-	if let Some(command_sink) = command_sink {
-		io.merge(
-			// We provide the rpc handler with the sending end of the channel to allow the rpc
-			// send EngineCommands to the background block authorship task.
-			ManualSeal::new(command_sink).into_rpc(),
-		)?;
+		io.extend_with(EthPubSubApi::to_delegate(EthPubSub::new(
+			pool,
+			client.clone(),
+			network,
+			SubscriptionManager::<HexEncodedIdProvider>::with_id_provider(
+				HexEncodedIdProvider::default(),
+				Arc::new(subscription_task_executor),
+			),
+			overrides,
+		)));
 	}
 
-	Ok(io)
+	io
 }

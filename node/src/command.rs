@@ -119,13 +119,10 @@ fn extract_genesis_wasm(chain_spec: &Box<dyn sc_service::ChainSpec>) -> Result<V
 macro_rules! construct_async_run {
 	(|$components:ident, $cli:ident, $cmd:ident, $config:ident| $( $code:tt )* ) => {{
 		let runner = $cli.create_runner($cmd)?;
-		runner.async_run(|$config| {
-			let $components = new_partial::<
-				RuntimeApi,
-				TemplateRuntimeExecutor,
-			>(
+		runner.async_run(|mut $config| {
+			let $components = new_partial(
 				// We default to the non-parachain import queue and select chain.
-				&$config, false,
+				&mut $config, false,
 			)?;
 			let task_manager = $components.task_manager;
 			{ $( $code )* }.map(|v| (v, task_manager))
@@ -140,7 +137,7 @@ pub fn run() -> Result<()> {
 	match &cli.subcommand {
 		Some(Subcommand::BuildSpec(cmd)) => {
 			let runner = cli.create_runner(cmd)?;
-			runner.sync_run(|config| cmd.run(config.chain_spec, config.network))
+			runner.sync_run(|mut config| cmd.run(config.chain_spec, config.network))
 		}
 		Some(Subcommand::CheckBlock(cmd)) => {
 			construct_async_run!(|components, cli, cmd, config| {
@@ -165,7 +162,7 @@ pub fn run() -> Result<()> {
 		Some(Subcommand::PurgeChain(cmd)) => {
 			let runner = cli.create_runner(cmd)?;
 
-			runner.sync_run(|config| {
+			runner.sync_run(|mut config| {
 				let polkadot_cli = RelayChainCli::new(
 					&config,
 					[RelayChainCli::executable_name()]
@@ -238,28 +235,28 @@ pub fn run() -> Result<()> {
 			match cmd {
 				BenchmarkCmd::Pallet(cmd) => {
 					if cfg!(feature = "runtime-benchmarks") {
-						runner.sync_run(|config| cmd.run::<Block, TemplateRuntimeExecutor>(config))
+						runner.sync_run(|mut config| cmd.run::<Block, TemplateRuntimeExecutor>(config))
 					} else {
 						Err("Benchmarking wasn't enabled when building the node. \
 			  You can enable it with `--features runtime-benchmarks`."
 							.into())
 					}
 				}
-				BenchmarkCmd::Block(cmd) => runner.sync_run(|config| {
+				BenchmarkCmd::Block(cmd) => runner.sync_run(|mut config| {
 					let partials =
-						new_partial::<RuntimeApi, TemplateRuntimeExecutor>(&config, false)?;
+						new_partial(&mut config, false)?;
 					cmd.run(partials.client)
 				}),
-				BenchmarkCmd::Storage(cmd) => runner.sync_run(|config| {
+				BenchmarkCmd::Storage(cmd) => runner.sync_run(|mut config| {
 					let partials =
-						new_partial::<RuntimeApi, TemplateRuntimeExecutor>(&config, false)?;
+						new_partial(&mut config, false)?;
 					let db = partials.backend.expose_db();
 					let storage = partials.backend.expose_storage();
 
 					cmd.run(config, partials.client.clone(), db, storage)
 				}),
 				BenchmarkCmd::Overhead(_) => Err("Unsupported benchmarking command".into()),
-				BenchmarkCmd::Machine(cmd) => runner.sync_run(|config| cmd.run(&config)),
+				BenchmarkCmd::Machine(cmd) => runner.sync_run(|mut config| cmd.run(&config)),
 			}
 		}
 		Some(Subcommand::RunInstantSeal(run_cmd)) => {
