@@ -199,5 +199,6 @@ fn testnet_genesis(
 			false,
 			sp_runtime::Permill::from_parts(125_000),
 		),
+		treasury: Default::default(),
 	}
 }
