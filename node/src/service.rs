@@ -360,6 +360,17 @@ where
 	let overrides = crate::rpc::overrides_handle(client.clone());
 	let fee_history_limit = 2048;
 
+	crate::rpc::spawn_essential_tasks(crate::rpc::SpawnTasksParams {
+		task_manager: &task_manager,
+		client: client.clone(),
+		substrate_backend: backend.clone(),
+		frontier_backend: frontier_backend.clone(),
+		filter_pool: filter_pool.clone(),
+		overrides: overrides.clone(),
+		fee_history_limit,
+		fee_history_cache: fee_history_cache.clone(),
+	});
+
 	let block_data_cache = Arc::new(fc_rpc::EthBlockDataCacheTask::new(
 		task_manager.spawn_handle(),
 		overrides.clone(),
