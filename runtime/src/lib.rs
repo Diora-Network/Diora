@@ -27,17 +27,19 @@ use sp_version::RuntimeVersion;
 
 use frame_support::{
 	construct_runtime, match_types, parameter_types,
-	traits::{ConstBool,Everything, OnInitialize},
+	traits::{OnUnbalanced,ConstBool,Everything, OnInitialize},
 	weights::{
 		constants::{BlockExecutionWeight, ExtrinsicBaseWeight, RocksDbWeight, WEIGHT_PER_SECOND},
 		ConstantMultiplier, DispatchClass, IdentityFee, Weight, WeightToFeeCoefficient,
 		WeightToFeeCoefficients, WeightToFeePolynomial,
 	},
+	PalletId
 };
 use frame_system::{
 	limits::{BlockLength, BlockWeights},
 	EnsureRoot,
 };
+use pallet_balances::NegativeImbalance;
 
 pub use sp_runtime::{MultiAddress, Perbill, Permill};
 
@@ -67,10 +69,11 @@ pub use pallet_template;
 
 // EVM
 use fp_rpc::TransactionStatus;
+use frame_support::traits::Imbalance;
 use pallet_ethereum::{Call::transact, Transaction as EthereumTransaction};
 use pallet_evm::{
 	Account as EVMAccount, EnsureAddressNever, EnsureAddressRoot, FeeCalculator,
-	HashedAddressMapping, Runner,
+	HashedAddressMapping, OnChargeEVMTransaction as OnChargeEVMTransactionT,Runner
 };
 use sp_core::{H160, U256,H256};
 use sp_runtime::traits::{Dispatchable,DispatchInfoOf, PostDispatchInfoOf};
@@ -457,11 +460,41 @@ parameter_types! {
 }
 
 impl pallet_transaction_payment::Config for Runtime {
-	type OnChargeTransaction = pallet_transaction_payment::CurrencyAdapter<Balances, ()>;
+	type OnChargeTransaction = pallet_transaction_payment::CurrencyAdapter<Balances, DealWithFees<Runtime>>;
 	type WeightToFee = WeightToFee;
 	type LengthToFee = ConstantMultiplier<Balance, TransactionByteFee>;
 	type FeeMultiplierUpdate = SlowAdjustingFeeUpdate<Self>;
 	type OperationalFeeMultiplier = OperationalFeeMultiplier;
+}
+parameter_types! {
+    pub const ProposalBond: Permill = Permill::from_percent(5);
+    // 10 DIR
+    pub const ProposalBondMinimum: Balance = 10 * 1000000000000000000;
+    // 100 DIR
+    pub const ProposalBondMaximum: Balance = 100 * 1000000000000000000;
+	pub const SpendPeriod: BlockNumber = 6 * DAYS;
+	pub const MaxApprovals: u32 = 100;
+	pub const TreasuryPalletId: PalletId = PalletId(*b"pcx/trsy");
+}
+impl pallet_treasury::Config for Runtime {
+	type PalletId = TreasuryPalletId;
+	type Currency = Balances;
+	// At least three-fifths majority of the council is required (or root) to approve a proposal
+	type ApproveOrigin = EnsureRoot<AccountId>;
+	// More than half of the council is required (or root) to reject a proposal
+	type RejectOrigin = EnsureRoot<AccountId>;
+	type Event = Event;
+	// If spending proposal rejected, transfer proposer bond to treasury
+	type OnSlash = Treasury;
+	type ProposalBond = ProposalBond;
+	type ProposalBondMinimum = ProposalBondMaximum;
+	type SpendPeriod = SpendPeriod;
+	type Burn = ();
+	type BurnDestination = ();
+	type MaxApprovals = MaxApprovals;
+	type WeightInfo = pallet_treasury::weights::SubstrateWeight<Runtime>;
+	type SpendFunds = ();
+	type ProposalBondMaximum = ();
 }
 
 parameter_types! {
@@ -687,6 +720,33 @@ impl pallet_evm::GasWeightMapping for DioraGasWeightMapping {
 	}
 }
 
+pub struct DealWithFees<R>(sp_std::marker::PhantomData<R>);
+impl<R> OnUnbalanced<NegativeImbalance<R>> for DealWithFees<R>
+	where
+		R: pallet_balances::Config + pallet_treasury::Config,
+		pallet_treasury::Pallet<R>: OnUnbalanced<NegativeImbalance<R>>,
+{
+	// this seems to be called for substrate-based transactions
+	fn on_unbalanceds<B>(mut fees_then_tips: impl Iterator<Item = NegativeImbalance<R>>) {
+		if let Some(fees) = fees_then_tips.next() {
+			// for fees, 80% are burned, 20% to the treasury
+			let (_, to_treasury) = fees.ration(80, 20);
+			// Balances pallet automatically burns dropped Negative Imbalances by decreasing
+			// total_supply accordingly
+			<pallet_treasury::Pallet<R> as OnUnbalanced<_>>::on_unbalanced(to_treasury);
+		}
+	}
+
+	// this is called from pallet_evm for Ethereum-based transactions
+	// (technically, it calls on_unbalanced, which calls this when non-zero)
+	fn on_nonzero_unbalanced(amount: NegativeImbalance<R>) {
+		// Balances pallet automatically burns dropped Negative Imbalances by decreasing
+		// total_supply accordingly
+		let (_, to_treasury) = amount.ration(80, 20);
+		<pallet_treasury::Pallet<R> as OnUnbalanced<_>>::on_unbalanced(to_treasury);
+	}
+}
+
 impl pallet_evm::Config for Runtime {
 	type FeeCalculator = BaseFee;
 	type GasWeightMapping = DioraGasWeightMapping;
@@ -700,7 +760,7 @@ impl pallet_evm::Config for Runtime {
 	type PrecompilesType = DioraPrecompiles<Runtime>;
 	type PrecompilesValue = PrecompilesValue;
 	type ChainId = EthereumChainId;
-	type OnChargeTransaction = ();
+	type OnChargeTransaction = pallet_evm::EVMCurrencyAdapter<Balances, DealWithFees<Runtime>>;
 	type BlockGasLimit = BlockGasLimit;
 	type FindAuthor = ();
 	type WeightInfo = pallet_evm::weights::SubstrateWeight<Self>;
@@ -777,6 +837,9 @@ construct_runtime!(
         Evm: pallet_evm::{Pallet, Config, Call, Storage, Event<T>} = 51,
         Ethereum: pallet_ethereum::{Pallet, Call, Storage, Event, Config, Origin} = 52,
         BaseFee: pallet_base_fee::{Pallet, Call, Storage, Config<T>, Event} = 54,
+
+		// Treasury stuff.
+		Treasury: pallet_treasury::{Pallet, Storage, Config, Event<T>, Call} = 80,
 	}
 );
 
