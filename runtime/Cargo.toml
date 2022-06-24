@@ -20,7 +20,7 @@ smallvec = "1.6.1"
 
 # Diora Dependencies
 pallet-template = { path = "../pallets/template", default-features = false }
-
+parachain-staking = { path = "../pallets/parachain-staking", default-features = false }
 # Substrate Dependencies
 ## Substrate Primitive Dependencies
 sp-api = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.20", default-features = false }
@@ -65,9 +65,9 @@ pallet-collator-selection = { git = "https://github.com/paritytech/cumulus", bra
 parachain-info = { git = "https://github.com/paritytech/cumulus", branch = "polkadot-v0.9.20", default-features = false }
 
 # Nimbus Dependencies
-nimbus-primitives = { path = "../node/nimbus-primitives", default-features = false }
-pallet-author-inherent = { path = "../pallets/author-inherent", default-features = false }
-pallet-author-slot-filter = { path = "../pallets/author-slot-filter", default-features = false }
+nimbus-primitives = { git = "https://github.com/PureStake/nimbus", branch = "moonbeam-polkadot-v0.9.20", default-features = false }
+pallet-author-inherent = { git = "https://github.com/PureStake/nimbus", branch = "moonbeam-polkadot-v0.9.20", default-features = false }
+pallet-author-slot-filter = { git = "https://github.com/PureStake/nimbus", branch = "moonbeam-polkadot-v0.9.20", default-features = false }
 pallet-ethereum-chain-id = { path = "../pallets/ethereum-chain-id", default-features = false }
 
 # Frontier Dependencies
@@ -114,6 +114,7 @@ std = [
 	"nimbus-primitives/std",
 	"pallet-author-inherent/std",
 	"pallet-author-slot-filter/std",
+	"parachain-staking/std",
 	"pallet-balances/std",
 	"pallet-collator-selection/std",
 	"pallet-randomness-collective-flip/std",
