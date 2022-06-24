@@ -37,7 +37,7 @@ pub mod pallet {
 	#[cfg(feature = "std")]
 	impl Default for GenesisConfig {
 		fn default() -> Self {
-			Self { chain_id: 102u64 }
+			Self { chain_id: 201u64 }
 		}
 	}
 
