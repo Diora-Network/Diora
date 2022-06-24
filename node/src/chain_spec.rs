@@ -1,9 +1,11 @@
 use cumulus_primitives_core::ParaId;
-use diora_runtime::{AccountId, NimbusId, Signature};
+use diora_runtime::{AccountId, Balance, InflationInfo, NimbusId, Perbill, Range, Signature};
 use sc_chain_spec::{ChainSpecExtension, ChainSpecGroup};
 use sc_service::ChainType;
+use hex_literal::hex;
 use serde::{Deserialize, Serialize};
-use sp_core::{sr25519, Pair, Public};
+use sp_core::{ecdsa,sr25519, Pair, Public};
+use log::debug;
 use sp_runtime::traits::{IdentifyAccount, Verify};
 
 /// Specialized `ChainSpec` for the normal parachain runtime.
@@ -49,6 +51,13 @@ where
 	AccountPublic: From<<TPublic::Pair as Pair>::Public>,
 {
 	AccountPublic::from(get_pair_from_seed::<TPublic>(seed)).into_account()
+}
+
+/// Helper function to generate a crypto pair from seed
+pub fn get_from_seed<TPublic: Public>(seed: &str) -> <TPublic::Pair as Pair>::Public {
+	TPublic::Pair::from_string(&format!("//{}", seed), None)
+		.expect("static values are valid; qed")
+		.public()
 }
 
 pub fn development_config() -> ChainSpec {
@@ -164,7 +173,29 @@ pub fn local_testnet_config() -> ChainSpec {
 		},
 	)
 }
-
+pub fn diora_inflation_config() -> InflationInfo<Balance> {
+	let annual = Range {
+		min: Perbill::from_percent(4),
+		ideal: Perbill::from_percent(5),
+		max: Perbill::from_percent(5),
+	};
+	let round = Range {
+		min: Perbill::from_percent(0),
+		ideal: Perbill::from_percent(0),
+		max: Perbill::from_percent(0),
+	};
+	InflationInfo {
+		// staking expectations
+		expect: Range {
+			min: 100 * 1000000000000000000,
+			ideal: 200*1000000000000000000,
+			max: 500 * 1000000000000000000,
+		},
+		// annual inflation
+		annual,
+		round,
+	}
+}
 fn testnet_genesis(
 	authorities: Vec<(AccountId, NimbusId)>,
 	endowed_accounts: Vec<AccountId>,
@@ -200,5 +231,28 @@ fn testnet_genesis(
 			sp_runtime::Permill::from_parts(125_000),
 		),
 		treasury: Default::default(),
+		// author_mapping: Default::default(),
+		parachain_staking: diora_runtime::ParachainStakingConfig {
+			candidates: vec![
+				// Alice -> Alith
+				(
+					get_account_id_from_seed::<sr25519::Public>("Alice"),
+					get_from_seed::<NimbusId>("Alice"),
+					1_000 * 1000000000000000000,
+				),
+				// Bob -> Baltithar
+				(
+					get_account_id_from_seed::<sr25519::Public>("Bob"),
+					get_from_seed::<NimbusId>("Bob"),
+					1_000 * 1000000000000000000,
+				),
+			]
+				.iter()
+				.cloned()
+				.map(|(account, _, bond)| (account, bond))
+				.collect(),
+			delegations:vec![],
+			inflation_config: diora_inflation_config(),
+		},
 	}
 }

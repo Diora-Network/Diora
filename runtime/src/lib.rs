@@ -14,12 +14,12 @@ use sp_runtime::{
 	create_runtime_str, generic, impl_opaque_keys,
 	traits::{AccountIdLookup, BlakeTwo256, Block as BlockT, IdentifyAccount, Verify},
 	transaction_validity::{TransactionSource, TransactionValidity,TransactionValidityError},
-	ApplyExtrinsicResult, MultiSignature,
+	ApplyExtrinsicResult, MultiSignature,Percent
 };
 
 pub use nimbus_primitives::NimbusId;
 pub use pallet_author_slot_filter::EligibilityValue;
-
+pub use parachain_staking::{InflationInfo,inflation, Range};
 use sp_std::prelude::*;
 #[cfg(feature = "std")]
 use sp_version::NativeVersion;
@@ -27,7 +27,7 @@ use sp_version::RuntimeVersion;
 
 use frame_support::{
 	construct_runtime, match_types, parameter_types,
-	traits::{OnUnbalanced,ConstBool,Everything, OnInitialize},
+	traits::{ConstU128, ConstU16, ConstU32, ConstU64, ConstU8,OnUnbalanced,ConstBool,Everything, OnInitialize},
 	weights::{
 		constants::{BlockExecutionWeight, ExtrinsicBaseWeight, RocksDbWeight, WEIGHT_PER_SECOND},
 		ConstantMultiplier, DispatchClass, IdentityFee, Weight, WeightToFeeCoefficient,
@@ -670,19 +670,79 @@ impl cumulus_pallet_dmp_queue::Config for Runtime {
 }
 
 impl pallet_author_inherent::Config for Runtime {
+	type AccountLookup = PotentialAuthorSet;
+	type EventHandler = ParachainStaking;
+	type CanAuthor = AuthorFilter;
 	// We start a new slot each time we see a new relay block.
 	type SlotBeacon = cumulus_pallet_parachain_system::RelaychainBlockNumberProvider<Self>;
-	type AccountLookup = PotentialAuthorSet;
-	type EventHandler = ();
-	type CanAuthor = AuthorFilter;
-	type WeightInfo = ();
+	type WeightInfo = pallet_author_inherent::weights::SubstrateWeight<Runtime>;
 }
 
 impl pallet_author_slot_filter::Config for Runtime {
 	type Event = Event;
 	type RandomnessSource = RandomnessCollectiveFlip;
-	type PotentialAuthors = PotentialAuthorSet;
-	type WeightInfo = ();
+	type PotentialAuthors = ParachainStaking;
+	type WeightInfo = pallet_author_slot_filter::weights::SubstrateWeight<Runtime>;
+}
+
+// This is a simple session key manager. It should probably either work with, or be replaced
+// entirely by pallet sessions
+// impl pallet_author_mapping::Config for Runtime {
+// 	type Event = Event;
+// 	type DepositCurrency = Balances;
+// 	type DepositAmount = ConstU128<{ 100 * 1000000000000000000}>;
+// 	type Keys = session_keys_primitives::VrfId;
+// 	type WeightInfo = pallet_author_mapping::weights::SubstrateWeight<Runtime>;
+// }
+
+parameter_types! {
+	/// Default fixed percent a collator takes off the top of due rewards
+	pub const DefaultCollatorCommission: Perbill = Perbill::from_percent(20);
+	/// Default percent of inflation set aside for parachain bond every round
+	pub const DefaultParachainBondReservePercent: Percent = Percent::from_percent(30);
+}
+
+impl parachain_staking::Config for Runtime {
+	type Event = Event;
+	type Currency = Balances;
+	type MonetaryGovernanceOrigin = EnsureRoot<AccountId>;
+	/// Minimum round length is 2 minutes (10 * 12 second block times)
+	type MinBlocksPerRound = ConstU32<10>;
+	/// Blocks per round
+	type DefaultBlocksPerRound = ConstU32<{ 6 * HOURS }>;
+	/// Rounds before the collator leaving the candidates request can be executed
+	type LeaveCandidatesDelay = ConstU32<{ 4 * 7 }>;
+	/// Rounds before the candidate bond increase/decrease can be executed
+	type CandidateBondLessDelay = ConstU32<{ 4 * 7 }>;
+	/// Rounds before the delegator exit can be executed
+	type LeaveDelegatorsDelay = ConstU32<{ 4 * 7 }>;
+	/// Rounds before the delegator revocation can be executed
+	type RevokeDelegationDelay = ConstU32<{ 4 * 7 }>;
+	/// Rounds before the delegator bond increase/decrease can be executed
+	type DelegationBondLessDelay = ConstU32<{ 4 * 7 }>;
+	/// Rounds before the reward is paid
+	type RewardPaymentDelay = ConstU32<2>;
+	/// Minimum collators selected per round, default at genesis and minimum forever after
+	type MinSelectedCandidates = ConstU32<8>;
+	/// Maximum top delegations per candidate
+	type MaxTopDelegationsPerCandidate = ConstU32<300>;
+	/// Maximum bottom delegations per candidate
+	type MaxBottomDelegationsPerCandidate = ConstU32<50>;
+	/// Maximum delegations per delegator
+	type MaxDelegationsPerDelegator = ConstU32<100>;
+	type DefaultCollatorCommission = DefaultCollatorCommission;
+	type DefaultParachainBondReservePercent = DefaultParachainBondReservePercent;
+	/// Minimum stake required to become a collator
+	type MinCollatorStk = ConstU128<{ 1000 * 1_000_000_000_000_000_000}>;
+	/// Minimum stake required to be reserved to be a candidate
+	type MinCandidateStk = ConstU128<{ 1000 * 1_000_000_000_000_000_000}>;
+	/// Minimum stake required to be reserved to be a delegator
+	type MinDelegation = ConstU128<{ 500 * 1_000_000_000_000_000}>;
+	/// Minimum stake required to be reserved to be a delegator
+	type MinDelegatorStk = ConstU128<{ 500 * 1_000_000_000_000_000 }>;
+	type OnCollatorPayout = ();
+	type OnNewRound = ();
+	type WeightInfo = parachain_staking::weights::SubstrateWeight<Runtime>;
 }
 
 impl pallet_account_set::Config for Runtime {}
@@ -819,9 +879,11 @@ construct_runtime!(
 		TransactionPayment: pallet_transaction_payment::{Pallet, Storage} = 11,
 
 		// Nimbus support. The order of these are important and shall not change.
-		AuthorInherent: pallet_author_inherent::{Pallet, Call, Storage, Inherent} = 20,
-		AuthorFilter: pallet_author_slot_filter::{Pallet, Storage, Event, Config} = 21,
-		PotentialAuthorSet: pallet_account_set::{Pallet, Storage, Config<T>} = 22,
+		ParachainStaking: parachain_staking::{Pallet, Call, Storage, Event<T>, Config<T>} = 20,
+		AuthorInherent: pallet_author_inherent::{Pallet, Call, Storage, Inherent} = 21,
+		AuthorFilter: pallet_author_slot_filter::{Pallet, Storage, Event, Config} = 22,
+		PotentialAuthorSet: pallet_account_set::{Pallet, Storage, Config<T>} = 23,
+		// AuthorMapping: pallet_author_mapping::{Pallet, Call, Config<T>, Storage, Event<T>} = 23,
 
 		// XCM helpers.
 		XcmpQueue: cumulus_pallet_xcmp_queue::{Pallet, Call, Storage, Event<T>} = 30,
