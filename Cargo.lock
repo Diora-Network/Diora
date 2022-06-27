@@ -1963,6 +1963,7 @@ dependencies = [
  "pallet-balances",
  "pallet-base-fee",
  "pallet-collator-selection",
+ "pallet-dapps-staking",
  "pallet-ethereum",
  "pallet-ethereum-chain-id",
  "pallet-evm",
@@ -5750,6 +5751,28 @@ dependencies = [
  "sp-core",
  "sp-io",
  "sp-runtime",
+ "sp-std",
+]
+
+[[package]]
+name = "pallet-dapps-staking"
+version = "3.4.1"
+dependencies = [
+ "frame-benchmarking",
+ "frame-support",
+ "frame-system",
+ "num-traits",
+ "pallet-balances",
+ "pallet-session",
+ "pallet-timestamp",
+ "parity-scale-codec",
+ "scale-info",
+ "serde",
+ "sp-arithmetic",
+ "sp-core",
+ "sp-io",
+ "sp-runtime",
+ "sp-staking",
  "sp-std",
 ]
 

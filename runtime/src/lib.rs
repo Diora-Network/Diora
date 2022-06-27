@@ -41,7 +41,7 @@ use frame_system::{
 };
 use pallet_balances::NegativeImbalance;
 
-pub use sp_runtime::{MultiAddress, Perbill, Permill};
+pub use sp_runtime::{MultiAddress, Perbill, Permill,RuntimeDebug};
 
 #[cfg(any(feature = "std", test))]
 pub use sp_runtime::BuildStorage;
@@ -856,6 +856,66 @@ impl pallet_base_fee::Config for Runtime {
 	type IsActive = ConstBool<false>;
 	type DefaultBaseFeePerGas = DefaultBaseFeePerGas;
 }
+parameter_types! {
+    pub const BlockPerEra: BlockNumber = 1 * DAYS;
+    pub const RegisterDeposit: Balance = 1000 * 1000000000000000000;
+    pub const MaxNumberOfStakersPerContract: u32 = 16384;
+    pub const MinimumStakingAmount: Balance = 500 * 1000000000000000000;
+    pub const MinimumRemainingAmount: Balance = 1 * 1000000000000000000;
+    pub const MaxEraStakeValues: u32 = 5;
+    pub const MaxUnlockingChunks: u32 = 4;
+    pub const UnbondingPeriod: u32 = 10;
+	pub const DappsStakingPalletId: PalletId = PalletId(*b"py/dpsst");
+}
+impl pallet_dapps_staking::Config for Runtime {
+	type Currency = Balances;
+	type BlockPerEra = BlockPerEra;
+	type SmartContract = SmartContract<AccountId>;
+	type RegisterDeposit = RegisterDeposit;
+	type Event = Event;
+	type WeightInfo = pallet_dapps_staking::weights::SubstrateWeight<Runtime>;
+	type MaxNumberOfStakersPerContract = MaxNumberOfStakersPerContract;
+	type MinimumStakingAmount = MinimumStakingAmount;
+	type PalletId = DappsStakingPalletId;
+	type MaxUnlockingChunks = MaxUnlockingChunks;
+	type UnbondingPeriod = UnbondingPeriod;
+	type MinimumRemainingAmount = MinimumRemainingAmount;
+	type MaxEraStakeValues = MaxEraStakeValues;
+}
+/// Multi-VM pointer to smart contract instance.
+#[derive(PartialEq, Eq, Copy, Clone, Encode, Decode, RuntimeDebug, scale_info::TypeInfo)]
+pub enum SmartContract<AccountId> {
+	/// EVM smart contract instance.
+	Evm(sp_core::H160),
+	/// Wasm smart contract instance.
+	Wasm(AccountId),
+}
+
+impl<AccountId> Default for SmartContract<AccountId> {
+	fn default() -> Self {
+		SmartContract::Evm(H160::repeat_byte(0x00))
+	}
+}
+
+#[cfg(not(feature = "runtime-benchmarks"))]
+impl<AccountId> pallet_dapps_staking::IsContract for SmartContract<AccountId> {
+	fn is_valid(&self) -> bool {
+		match self {
+			SmartContract::Wasm(_account) => false,
+			SmartContract::Evm(account) => Evm::account_codes(&account).len() > 0,
+		}
+	}
+}
+
+#[cfg(feature = "runtime-benchmarks")]
+impl<AccountId> pallet_dapps_staking::IsContract for SmartContract<AccountId> {
+	fn is_valid(&self) -> bool {
+		match self {
+			SmartContract::Wasm(_account) => false,
+			SmartContract::Evm(_account) => true,
+		}
+	}
+}
 
 
 // Create the runtime by composing the FRAME pallets that were previously configured.
@@ -883,6 +943,7 @@ construct_runtime!(
 		AuthorInherent: pallet_author_inherent::{Pallet, Call, Storage, Inherent} = 21,
 		AuthorFilter: pallet_author_slot_filter::{Pallet, Storage, Event, Config} = 22,
 		PotentialAuthorSet: pallet_account_set::{Pallet, Storage, Config<T>} = 23,
+		DappsStaking: pallet_dapps_staking::{Pallet, Call, Storage, Event<T>} = 24,
 		// AuthorMapping: pallet_author_mapping::{Pallet, Call, Config<T>, Storage, Event<T>} = 23,
 
 		// XCM helpers.
