@@ -51,7 +51,6 @@ pallet-session = { git = "https://github.com/paritytech/substrate", branch = "po
 pallet-timestamp = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.20", default-features = false }
 pallet-transaction-payment = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.20", default-features = false }
 pallet-transaction-payment-rpc-runtime-api = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.20", default-features = false }
-pallet-treasury = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.20", default-features = false }
 pallet-sudo = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.20", default-features = false }
 pallet-scheduler = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.20", default-features = false }
 pallet-utility = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.20", default-features = false }
@@ -94,6 +93,11 @@ xcm = { git = "https://github.com/paritytech/polkadot", branch = "release-v0.9.2
 xcm-builder = { git = "https://github.com/paritytech/polkadot", branch = "release-v0.9.20", default-features = false }
 xcm-executor = { git = "https://github.com/paritytech/polkadot", branch = "release-v0.9.20", default-features = false }
 
+# Governance
+pallet-collective = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.20", default-features = false }
+pallet-democracy = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.20", default-features = false }
+pallet-treasury = { git = 'https://github.com/paritytech/substrate', branch = "polkadot-v0.9.20", default-features = false }
+
 [build-dependencies]
 substrate-wasm-builder = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.20" }
 
@@ -130,7 +134,6 @@ std = [
 	"pallet-timestamp/std",
 	"pallet-transaction-payment-rpc-runtime-api/std",
 	"pallet-transaction-payment/std",
-	"pallet-treasury/std",
 	"parachain-info/std",
 	"polkadot-parachain/std",
 	"polkadot-runtime-common/std",
@@ -157,6 +160,9 @@ std = [
 	"pallet-evm-precompile-simple/std",
 	"pallet-evm-precompile-sha3fips/std",
 	"fp-rpc/std",
+	"pallet-collective/std",
+	"pallet-democracy/std",
+	"pallet-treasury/std",
 ]
 
 runtime-benchmarks = [
