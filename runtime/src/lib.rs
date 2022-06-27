@@ -27,7 +27,7 @@ use sp_version::RuntimeVersion;
 
 use frame_support::{
     construct_runtime, match_types, parameter_types,
-    traits::{ConstBool, ConstU128, ConstU32, Everything, OnInitialize, OnUnbalanced},
+    traits::{ConstBool, ConstU128, ConstU32, Everything, OnInitialize, OnUnbalanced, EqualPrivilegeOnly},
     weights::{
         constants::{BlockExecutionWeight, ExtrinsicBaseWeight, RocksDbWeight, WEIGHT_PER_SECOND},
         ConstantMultiplier, DispatchClass, IdentityFee, Weight, WeightToFeeCoefficient,
@@ -921,6 +921,51 @@ impl pallet_sudo::Config for Runtime {
     type Call = Call;
 }
 
+// Define the types required by the Scheduler pallet.
+parameter_types! {
+    pub MaximumSchedulerWeight: Weight = 10_000_000;
+    pub const MaxScheduledPerBlock: u32 = 50;
+    pub const NoPreimagePostponement: Option<u32> = Some(5 * MINUTES);
+}
+
+// Configure the runtime's implementation of the Scheduler pallet.
+impl pallet_scheduler::Config for Runtime {
+    type Event = Event;
+    type Origin = Origin;
+    type PalletsOrigin = OriginCaller;
+    type Call = Call;
+    type MaximumWeight = MaximumSchedulerWeight;
+    type ScheduleOrigin = frame_system::EnsureRoot<AccountId>;
+    type OriginPrivilegeCmp = EqualPrivilegeOnly;
+    type MaxScheduledPerBlock = MaxScheduledPerBlock;
+    type WeightInfo = ();
+    type PreimageProvider = ();
+    type NoPreimagePostponement = ();
+}
+
+// parameter_types! {
+//     pub const PreimageMaxSize: u32 = 4096 * 1024;
+//     pub const PreimageBaseDeposit: Balance = 1 * DOLLARS;
+//     pub const PreimageByteDeposit: Balance = 1 * CENTS;
+// }
+
+// impl pallet_preimage::Config for Runtime {
+//     type Event = Event;
+//     type WeightInfo = pallet_preimage::weights::SubstrateWeight<Runtime>;
+//     type Currency = Balances;
+//     type ManagerOrigin = EnsureRoot<AccountId>;
+//     type MaxSize = PreimageMaxSize;
+//     type BaseDeposit = PreimageBaseDeposit;
+//     type ByteDeposit = PreimageByteDeposit;
+// }
+
+impl pallet_utility::Config for Runtime {
+    type Event = Event;
+    type Call = Call;
+    type PalletsOrigin = OriginCaller;
+    type WeightInfo = pallet_utility::weights::SubstrateWeight<Runtime>;
+}
+
 // Create the runtime by composing the FRAME pallets that were previously configured.
 construct_runtime!(
     pub enum Runtime where
@@ -936,7 +981,10 @@ construct_runtime!(
         RandomnessCollectiveFlip: pallet_randomness_collective_flip::{Pallet, Storage} = 2,
         Timestamp: pallet_timestamp::{Pallet, Call, Storage, Inherent} = 3,
         ParachainInfo: parachain_info::{Pallet, Storage, Config} = 4,
-        Sudo: pallet_sudo::{Pallet, Call, Config<T>, Storage, Event<T>} = 5,
+        Utility: pallet_utility::{Pallet, Call, Storage, Event} = 5,
+        Sudo: pallet_sudo::{Pallet, Call, Config<T>, Storage, Event<T>} = 6,
+        Scheduler: pallet_scheduler::{Pallet, Call, Storage, Event<T>} = 7,
+        // Preimage: pallet_preimage::{Pallet, Call, Storage, Event<T>} = 8,
 
         // Monetary stuff.
         Balances: pallet_balances::{Pallet, Call, Storage, Config<T>, Event<T>} = 10,
