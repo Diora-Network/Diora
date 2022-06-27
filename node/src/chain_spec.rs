@@ -207,6 +207,10 @@ fn testnet_genesis(
 				.expect("WASM binary was not build, please build it!")
 				.to_vec(),
 		},
+		sudo: diora_runtime::SudoConfig {
+			// Assign network admin rights.
+			key: Some(get_account_id_from_seed::<sr25519::Public>("Alice")),
+		},
 		balances: diora_runtime::BalancesConfig {
 			balances: endowed_accounts
 				.iter()
@@ -222,7 +226,7 @@ fn testnet_genesis(
 			mapping: authorities,
 		},
 		parachain_system: Default::default(),
-		ethereum_chain_id: diora_runtime::EthereumChainIdConfig { chain_id: 102u64 },
+		ethereum_chain_id: diora_runtime::EthereumChainIdConfig { chain_id: 201u64 },
 		evm: Default::default(),
 		ethereum: Default::default(),
 		base_fee: diora_runtime::BaseFeeConfig::new(
