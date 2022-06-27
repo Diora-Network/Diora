@@ -8,58 +8,58 @@ pub use pallet::*;
 
 #[pallet]
 pub mod pallet {
-	use frame_support::pallet_prelude::*;
-	use frame_system::pallet_prelude::*;
+    use frame_support::pallet_prelude::*;
+    use frame_system::pallet_prelude::*;
 
-	/// The Ethereum Chain Id Pallet
-	#[pallet::pallet]
-	pub struct Pallet<T>(PhantomData<T>);
+    /// The Ethereum Chain Id Pallet
+    #[pallet::pallet]
+    pub struct Pallet<T>(PhantomData<T>);
 
-	/// Configuration trait of this pallet.
-	#[pallet::config]
-	pub trait Config: frame_system::Config {}
+    /// Configuration trait of this pallet.
+    #[pallet::config]
+    pub trait Config: frame_system::Config {}
 
-	impl<T: Config> Get<u64> for Pallet<T> {
-		fn get() -> u64 {
-			Self::chain_id()
-		}
-	}
+    impl<T: Config> Get<u64> for Pallet<T> {
+        fn get() -> u64 {
+            Self::chain_id()
+        }
+    }
 
-	#[pallet::storage]
-	#[pallet::getter(fn chain_id)]
-	pub type ChainId<T> = StorageValue<_, u64, ValueQuery>;
+    #[pallet::storage]
+    #[pallet::getter(fn chain_id)]
+    pub type ChainId<T> = StorageValue<_, u64, ValueQuery>;
 
-	#[pallet::genesis_config]
-	pub struct GenesisConfig {
-		pub chain_id: u64,
-	}
+    #[pallet::genesis_config]
+    pub struct GenesisConfig {
+        pub chain_id: u64,
+    }
 
-	#[cfg(feature = "std")]
-	impl Default for GenesisConfig {
-		fn default() -> Self {
-			Self { chain_id: 201u64 }
-		}
-	}
+    #[cfg(feature = "std")]
+    impl Default for GenesisConfig {
+        fn default() -> Self {
+            Self { chain_id: 201u64 }
+        }
+    }
 
-	#[pallet::genesis_build]
-	impl<T: Config> GenesisBuild<T> for GenesisConfig {
-		fn build(&self) {
-			ChainId::<T>::put(self.chain_id);
-		}
-	}
+    #[pallet::genesis_build]
+    impl<T: Config> GenesisBuild<T> for GenesisConfig {
+        fn build(&self) {
+            ChainId::<T>::put(self.chain_id);
+        }
+    }
 
-	#[pallet::call]
-	impl<T: Config> Pallet<T> {
-		#[pallet::weight(100_000_000u64)]
-		pub fn set_chain_id(
-			origin: OriginFor<T>,
-			#[pallet::compact] new_chain_id: u64,
-		) -> DispatchResult {
-			ensure_root(origin)?;
+    #[pallet::call]
+    impl<T: Config> Pallet<T> {
+        #[pallet::weight(100_000_000u64)]
+        pub fn set_chain_id(
+            origin: OriginFor<T>,
+            #[pallet::compact] new_chain_id: u64,
+        ) -> DispatchResult {
+            ensure_root(origin)?;
 
-			ChainId::<T>::mutate(|chain_id| *chain_id = new_chain_id);
+            ChainId::<T>::mutate(|chain_id| *chain_id = new_chain_id);
 
-			Ok(())
-		}
-	}
+            Ok(())
+        }
+    }
 }

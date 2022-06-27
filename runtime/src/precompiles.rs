@@ -9,8 +9,8 @@ use pallet_evm_precompile_simple::{ECRecover, ECRecoverPublicKey, Identity, Ripe
 pub struct DioraPrecompiles<R>(PhantomData<R>);
 
 impl<R> DioraPrecompiles<R>
-    where
-        R: pallet_evm::Config,
+where
+    R: pallet_evm::Config,
 {
     pub fn new() -> Self {
         Self(Default::default())
@@ -23,8 +23,8 @@ impl<R> DioraPrecompiles<R>
     }
 }
 impl<R> PrecompileSet for DioraPrecompiles<R>
-    where
-        R: pallet_evm::Config,
+where
+    R: pallet_evm::Config,
 {
     fn execute(&self, handle: &mut impl PrecompileHandle) -> Option<PrecompileResult> {
         match handle.code_address() {
