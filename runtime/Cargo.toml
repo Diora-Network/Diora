@@ -52,7 +52,6 @@ pallet-sudo = { git = "https://github.com/paritytech/substrate", branch = "polka
 pallet-timestamp = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.20", default-features = false }
 pallet-transaction-payment = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.20", default-features = false }
 pallet-transaction-payment-rpc-runtime-api = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.20", default-features = false }
-pallet-treasury = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.20", default-features = false }
 
 # Cumulus dependencies
 cumulus-pallet-dmp-queue = { git = "https://github.com/paritytech/cumulus", branch = "polkadot-v0.9.20", default-features = false }
@@ -91,6 +90,12 @@ polkadot-runtime-common = { git = "https://github.com/paritytech/polkadot", bran
 xcm = { git = "https://github.com/paritytech/polkadot", branch = "release-v0.9.20", default-features = false }
 xcm-builder = { git = "https://github.com/paritytech/polkadot", branch = "release-v0.9.20", default-features = false }
 xcm-executor = { git = "https://github.com/paritytech/polkadot", branch = "release-v0.9.20", default-features = false }
+
+# Governance
+pallet-collective = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.20", default-features = false }
+pallet-democracy = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.20", default-features = false }
+pallet-scheduler = { git = 'https://github.com/paritytech/substrate', branch = "polkadot-v0.9.20", default-features = false }
+pallet-treasury = { git = 'https://github.com/paritytech/substrate', branch = "polkadot-v0.9.20", default-features = false }
 
 [build-dependencies]
 substrate-wasm-builder = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.20" }
@@ -153,6 +158,10 @@ std = [
 	"pallet-evm-precompile-simple/std",
 	"pallet-evm-precompile-sha3fips/std",
 	"fp-rpc/std",
+	"pallet-collective/std",
+	"pallet-democracy/std",
+	"pallet-scheduler/std",
+	"pallet-treasury/std",
 ]
 
 runtime-benchmarks = [

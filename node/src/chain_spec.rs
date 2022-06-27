@@ -1,5 +1,11 @@
 use cumulus_primitives_core::ParaId;
-use diora_runtime::{AccountId, Balance, InflationInfo, NimbusId, Perbill, Range, Signature};
+use diora_runtime::{
+    constants::currency::{DIR, SUPPLY_FACTOR},
+    AccountId, AuthorFilterConfig, Balance, BalancesConfig, BaseFeeConfig, DefaultBaseFeePerGas,
+    EligibilityValue, EthereumChainIdConfig, GenesisConfig, InflationInfo, NimbusId,
+    ParachainInfoConfig, ParachainStakingConfig, Perbill, PotentialAuthorSetConfig, Range,
+    Signature, SudoConfig, SystemConfig, WASM_BINARY,
+};
 use sc_chain_spec::{ChainSpecExtension, ChainSpecGroup};
 use sc_service::ChainType;
 use serde::{Deserialize, Serialize};
@@ -7,7 +13,7 @@ use sp_core::{sr25519, Pair, Public};
 use sp_runtime::traits::{IdentifyAccount, Verify};
 
 /// Specialized `ChainSpec` for the normal parachain runtime.
-pub type ChainSpec = sc_service::GenericChainSpec<diora_runtime::GenesisConfig, Extensions>;
+pub type ChainSpec = sc_service::GenericChainSpec<GenesisConfig, Extensions>;
 
 /// Helper function to generate a crypto pair from seed
 pub fn get_pair_from_seed<TPublic: Public>(seed: &str) -> <TPublic::Pair as Pair>::Public {
@@ -186,9 +192,9 @@ pub fn diora_inflation_config() -> InflationInfo<Balance> {
     InflationInfo {
         // staking expectations
         expect: Range {
-            min: 100 * 1000000000000000000,
-            ideal: 200 * 1000000000000000000,
-            max: 500 * 1000000000000000000,
+            min: 100_000 * DIR * SUPPLY_FACTOR,
+            ideal: 200_000 * DIR * SUPPLY_FACTOR,
+            max: 500_000 * DIR * SUPPLY_FACTOR,
         },
         // annual inflation
         annual,
@@ -199,55 +205,58 @@ fn testnet_genesis(
     authorities: Vec<(AccountId, NimbusId)>,
     endowed_accounts: Vec<AccountId>,
     id: ParaId,
-) -> diora_runtime::GenesisConfig {
-    diora_runtime::GenesisConfig {
-        system: diora_runtime::SystemConfig {
-            code: diora_runtime::WASM_BINARY
+) -> GenesisConfig {
+    GenesisConfig {
+        system: SystemConfig {
+            code: WASM_BINARY
                 .expect("WASM binary was not build, please build it!")
                 .to_vec(),
         },
-        sudo: diora_runtime::SudoConfig {
+        sudo: SudoConfig {
             // Assign network admin rights.
             key: Some(get_account_id_from_seed::<sr25519::Public>("Alice")),
         },
-        balances: diora_runtime::BalancesConfig {
+        balances: BalancesConfig {
             balances: endowed_accounts
                 .iter()
                 .cloned()
-                .map(|k| (k, 10_000_000_000_000_000_000_000))
+                .map(|k| (k, 500_000 * DIR))
                 .collect(),
         },
-        parachain_info: diora_runtime::ParachainInfoConfig { parachain_id: id },
-        author_filter: diora_runtime::AuthorFilterConfig {
-            eligible_count: diora_runtime::EligibilityValue::default(),
+        parachain_info: ParachainInfoConfig { parachain_id: id },
+        author_filter: AuthorFilterConfig {
+            eligible_count: EligibilityValue::default(),
         },
-        potential_author_set: diora_runtime::PotentialAuthorSetConfig {
+        potential_author_set: PotentialAuthorSetConfig {
             mapping: authorities,
         },
         parachain_system: Default::default(),
-        ethereum_chain_id: diora_runtime::EthereumChainIdConfig { chain_id: 201u64 },
+        ethereum_chain_id: EthereumChainIdConfig { chain_id: 201u64 },
         evm: Default::default(),
         ethereum: Default::default(),
-        base_fee: diora_runtime::BaseFeeConfig::new(
-            diora_runtime::DefaultBaseFeePerGas::get(),
+        base_fee: BaseFeeConfig::new(
+            DefaultBaseFeePerGas::get(),
             false,
             sp_runtime::Permill::from_parts(125_000),
         ),
+        council: Default::default(),
+        democracy: Default::default(),
+        technical_committee: Default::default(),
         treasury: Default::default(),
         // author_mapping: Default::default(),
-        parachain_staking: diora_runtime::ParachainStakingConfig {
+        parachain_staking: ParachainStakingConfig {
             candidates: vec![
                 // Alice -> Alith
                 (
                     get_account_id_from_seed::<sr25519::Public>("Alice"),
                     get_from_seed::<NimbusId>("Alice"),
-                    1_000 * 1000000000000000000,
+                    1_000 * DIR * SUPPLY_FACTOR,
                 ),
                 // Bob -> Baltithar
                 (
                     get_account_id_from_seed::<sr25519::Public>("Bob"),
                     get_from_seed::<NimbusId>("Bob"),
-                    1_000 * 1000000000000000000,
+                    1_000 * DIR * SUPPLY_FACTOR,
                 ),
             ]
             .iter()
