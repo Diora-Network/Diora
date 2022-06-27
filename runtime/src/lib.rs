@@ -972,6 +972,13 @@ impl pallet_sudo::Config for Runtime {
     type Call = Call;
 }
 
+impl pallet_utility::Config for Runtime {
+    type Event = Event;
+    type Call = Call;
+    type PalletsOrigin = OriginCaller;
+    type WeightInfo = pallet_utility::weights::SubstrateWeight<Runtime>;
+}
+
 // Create the runtime by composing the FRAME pallets that were previously configured.
 construct_runtime!(
     pub enum Runtime where
@@ -987,7 +994,10 @@ construct_runtime!(
         RandomnessCollectiveFlip: pallet_randomness_collective_flip::{Pallet, Storage} = 2,
         Timestamp: pallet_timestamp::{Pallet, Call, Storage, Inherent} = 3,
         ParachainInfo: parachain_info::{Pallet, Storage, Config} = 4,
-        Sudo: pallet_sudo::{Pallet, Call, Config<T>, Storage, Event<T>} = 5,
+        Utility: pallet_utility::{Pallet, Call, Storage, Event} = 5,
+        Sudo: pallet_sudo::{Pallet, Call, Config<T>, Storage, Event<T>} = 6,
+        Scheduler: pallet_scheduler::{Pallet, Call, Storage, Event<T>} = 7,
+        // Preimage: pallet_preimage::{Pallet, Call, Storage, Event<T>} = 8,
 
         // Monetary stuff.
         Balances: pallet_balances::{Pallet, Call, Storage, Config<T>, Event<T>} = 10,
@@ -1021,7 +1031,6 @@ construct_runtime!(
         Council: pallet_collective::<Instance1>::{Pallet, Call, Storage, Origin<T>, Event<T>, Config<T>} = 61,
         TechnicalCommittee: pallet_collective::<Instance2>::{Pallet, Call, Storage, Origin<T>, Event<T>, Config<T>} = 62,
         Treasury: pallet_treasury::{Pallet, Call, Storage, Config, Event<T>} = 65,
-        Scheduler: pallet_scheduler::{Pallet, Call, Storage, Event<T>} = 66,
     }
 );
 

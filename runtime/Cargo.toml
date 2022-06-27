@@ -48,10 +48,12 @@ frame-system-rpc-runtime-api = { git = "https://github.com/paritytech/substrate"
 pallet-balances = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.20", default-features = false }
 pallet-randomness-collective-flip = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.20", default-features = false }
 pallet-session = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.20", default-features = false }
-pallet-sudo = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.20", default-features = false }
 pallet-timestamp = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.20", default-features = false }
 pallet-transaction-payment = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.20", default-features = false }
 pallet-transaction-payment-rpc-runtime-api = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.20", default-features = false }
+pallet-sudo = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.20", default-features = false }
+pallet-scheduler = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.20", default-features = false }
+pallet-utility = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.20", default-features = false }
 
 # Cumulus dependencies
 cumulus-pallet-dmp-queue = { git = "https://github.com/paritytech/cumulus", branch = "polkadot-v0.9.20", default-features = false }
@@ -94,7 +96,6 @@ xcm-executor = { git = "https://github.com/paritytech/polkadot", branch = "relea
 # Governance
 pallet-collective = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.20", default-features = false }
 pallet-democracy = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.20", default-features = false }
-pallet-scheduler = { git = 'https://github.com/paritytech/substrate', branch = "polkadot-v0.9.20", default-features = false }
 pallet-treasury = { git = 'https://github.com/paritytech/substrate', branch = "polkadot-v0.9.20", default-features = false }
 
 [build-dependencies]
@@ -127,11 +128,12 @@ std = [
 	"pallet-randomness-collective-flip/std",
 	"pallet-session/std",
 	"pallet-sudo/std",
+	"pallet-scheduler/std",
+	"pallet-utility/std",
 	"pallet-template/std",
 	"pallet-timestamp/std",
 	"pallet-transaction-payment-rpc-runtime-api/std",
 	"pallet-transaction-payment/std",
-	"pallet-treasury/std",
 	"parachain-info/std",
 	"polkadot-parachain/std",
 	"polkadot-runtime-common/std",
@@ -160,7 +162,6 @@ std = [
 	"fp-rpc/std",
 	"pallet-collective/std",
 	"pallet-democracy/std",
-	"pallet-scheduler/std",
 	"pallet-treasury/std",
 ]
 
