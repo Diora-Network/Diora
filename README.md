@@ -53,7 +53,7 @@ Diora rewards developers based on the value and impact of their dapp, rather tha
 
 
 
-### Devnet Chain Specs
+## Devnet Chain Specs
 
 The Devnet is a public early access testnet to validate the technical architecture and security of our blockchain in a setting that is as realistic as possible.
 
