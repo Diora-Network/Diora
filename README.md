@@ -35,14 +35,10 @@
 ## Table of Contents
 
 * [About the Project](#about-the-project)
-  * [Devnet](#built-with)
-* [Getting Started](#getting-started)
-  * [Prerequisites](#prerequisites)
-  * [Installation](#installation)
-* [Usage](#usage)
+* [Devnet](#built-with)
+* [Running Diora](#getting-started)
 * [Contributing](#contributing)
 * [License](#license)
-* [Roadmap](#roadmap)
 * [Contact](#contact)
 * [Acknowledgements](#acknowledgements)
 
@@ -167,12 +163,12 @@ Project Link: [https://github.com/diora-network/diora](https://github.com/diora-
 
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
-[forks-shield]: https://img.shields.io/github/forks/roshanlam/ReadMeTemplate?style=for-the-badge
+[forks-shield]: https://img.shields.io/github/forks/
 [forks-url]: https://github.com/diora-network/diora/members
 [stars-shield]: https://img.shields.io/github/stars/roshanlam/ReadMeTemplate?style=for-the-badge
 [stars-url]: https://github.com/diora-network/diora/stargazers
 [issues-shield]: https://img.shields.io/github/issues/roshanlam/ReadMeTemplate?style=for-the-badge
 [issues-url]: https://github.com/diora-network/diora/issues
-[linkedin-shield] https://img.shields.io/badge/contact-me-blue?logo=discord&logoColor=white
+[linkedin-shield]: https://img.shields.io/badge/contact-me-blue?logo=discord&logoColor=white
 [linkedin-url]: https://discord.me
 
