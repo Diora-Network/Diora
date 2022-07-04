@@ -15,7 +15,7 @@
   <h3 align="center">Diora Network</h3>
 
   <p align="center">
-    Diora Network is a incentivised smart contract parachain, utilizing advanced PoSM with Double Validation & Randomization for security guarantees
+    Diora Network is a incentivised smart contract parachain, utilizing advanced PoSM with Double Validation for security guarantees
     <br />
     <a href="https://diora.network/docs"><strong>Explore the docs »</strong></a>
     <br />
