@@ -6,7 +6,7 @@
 <br />
 <p align="center">
   <a href="https://diora.network/">
-    <img src="./utils/branding/logo.png" alt="Logo" width="200" height="200">
+    <img src="./utils/branding/logo.png" alt="Logo" width="180" height="180">
   </a>
 
   <h3 align="center">Diora Network</h3>
@@ -156,8 +156,6 @@ Project Link: [https://github.com/diora-network/diora](https://github.com/diora-
 * [Purestake](https://purestake.io)
 * [Astar](https://astar.newtwork)
 * [ORML]()
-
-
 
 
 
