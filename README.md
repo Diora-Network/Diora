@@ -1,6 +1,3 @@
-[![Forks][forks-shield]][forks-url]
-[![Stargazers][stars-shield]][stars-url]
-[![Issues][issues-shield]][issues-url]
 [![LinkedIn][linkedin-shield]][linkedin-url]
 
 
@@ -9,7 +6,7 @@
 <br />
 <p align="center">
   <a href="https://diora.network/">
-    <img src="./utils/branding/logo.png" alt="Logo" width="180" height="180">
+    <img src="./utils/branding/logo.png" alt="Logo" width="80" height="80">
   </a>
 
   <h3 align="center">Diora Network</h3>
@@ -167,12 +164,5 @@ Project Link: [https://github.com/diora-network/diora](https://github.com/diora-
 
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
-[forks-shield]: https://img.shields.io/github/forks/
-[forks-url]: https://github.com/diora-network/diora/network/members
-[stars-shield]: https://img.shields.io/github/stars/
-[stars-url]: https://github.com/diora-network/diora/stargazers
-[issues-shield]: https://img.shields.io/badge/github/issues/
-[issues-url]: https://github.com/diora-network/diora/issues
-[linkedin-shield]: https://img.shields.io/badge/contact-us-blue?logo=discord&logoColor=white
-[linkedin-url]: https://discord.me
+[linkedin-url]: https://discord.gg/2bVwpwF9aq
 
