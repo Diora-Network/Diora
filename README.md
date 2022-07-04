@@ -1,4 +1,4 @@
-[![LinkedIn][linkedin-shield]][linkedin-url]
+[![Discord][discord-shield]][discord-url]
 
 
 
@@ -164,5 +164,6 @@ Project Link: [https://github.com/diora-network/diora](https://github.com/diora-
 
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
-[linkedin-url]: https://discord.gg/2bVwpwF9aq
+[discord-shield]: https://img.shields.io/badge/contact-us-blue?logo=discord&logoColor=white
+[discord-url]: https://discord.gg/2bVwpwF9aq
 
