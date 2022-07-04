@@ -9,7 +9,7 @@
 <br />
 <p align="center">
   <a href="https://diora.network/">
-    <img src="./logo.png" alt="Logo" width="80" height="80">
+    <img src="./utils/branding/logo.png" alt="Logo" width="80" height="80">
   </a>
 
   <h3 align="center">Diora Network</h3>
@@ -49,7 +49,11 @@
 
 https://user-images.githubusercontent.com/49777543/168764160-121147ce-78c3-4e77-a020-5e03df8e6e06.mp4
 
+Diora is built with Substrate which natively supports EVM, WASM (soon) and a multi-layer sharding scaling solution if needed.
 
+The main goal of Diora Network is to foster an array of diverse and sustainable cross-chain applications by empowering and rewarding developers that build on the network with baked in incentives and rewards
+
+Diora rewards developers based on the value and impact of their dapp, rather than their close association or connections to capital. Unlike existing versions of older layer 1s where tokens are mostly concentrated in the hands of the first few early participants Diora is designed to be shared across all contributors, users and stakeholders.
 
 
 
@@ -164,10 +168,11 @@ Project Link: [https://github.com/diora-network/diora](https://github.com/diora-
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
 [forks-shield]: https://img.shields.io/github/forks/
-[forks-url]: https://github.com/diora-network/diora/members
+[forks-url]: https://github.com/diora-network/diora/network/members
 [stars-shield]: https://img.shields.io/github/stars/
 [stars-url]: https://github.com/diora-network/diora/stargazers
 [issues-shield]: https://img.shields.io/badge/github/issues/
 [issues-url]: https://github.com/diora-network/diora/issues
 [linkedin-shield]: https://img.shields.io/badge/contact-us-blue?logo=discord&logoColor=white
 [linkedin-url]: https://discord.me
+
