@@ -35,7 +35,6 @@
 * [Devnet](#built-with)
 * [Running Diora](#getting-started)
 * [Contributing](#contributing)
-* [License](#license)
 * [Contact](#contact)
 * [Acknowledgements](#acknowledgements)
 
