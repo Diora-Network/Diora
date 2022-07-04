@@ -165,10 +165,9 @@ Project Link: [https://github.com/diora-network/diora](https://github.com/diora-
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
 [forks-shield]: https://img.shields.io/github/forks/
 [forks-url]: https://github.com/diora-network/diora/members
-[stars-shield]: https://img.shields.io/github/stars/roshanlam/ReadMeTemplate?style=for-the-badge
+[stars-shield]: https://img.shields.io/github/stars/
 [stars-url]: https://github.com/diora-network/diora/stargazers
-[issues-shield]: https://img.shields.io/github/issues/roshanlam/ReadMeTemplate?style=for-the-badge
+[issues-shield]: https://img.shields.io/badge/github/issues/
 [issues-url]: https://github.com/diora-network/diora/issues
-[linkedin-shield]: https://img.shields.io/badge/contact-me-blue?logo=discord&logoColor=white
+[linkedin-shield]: https://img.shields.io/badge/contact-us-blue?logo=discord&logoColor=white
 [linkedin-url]: https://discord.me
-
