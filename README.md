@@ -9,7 +9,7 @@
 <br />
 <p align="center">
   <a href="https://diora.network/">
-    <img src="./utils/branding/logo.png" alt="Logo" width="80" height="80">
+    <img src="./utils/branding/logo.png" alt="Logo" width="180" height="180">
   </a>
 
   <h3 align="center">Diora Network</h3>
