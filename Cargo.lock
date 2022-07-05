@@ -2452,7 +2452,7 @@ dependencies = [
 [[package]]
 name = "fc-consensus"
 version = "2.0.0-dev"
-source = "git+https://github.com/Diora-Network/frontier?branch=polkadot-v0.9.20#175e42fc47cb6cd2772cccb7ac3ff59fd2d1a4dd"
+source = "git+https://github.com/Diora-Network/frontier?branch=polkadot-v0.9.20#60a1aa317c4fe8e298048fd5476d9e4e598460ab"
 dependencies = [
  "async-trait",
  "fc-db",
@@ -2471,7 +2471,7 @@ dependencies = [
 [[package]]
 name = "fc-db"
 version = "2.0.0-dev"
-source = "git+https://github.com/Diora-Network/frontier?branch=polkadot-v0.9.20#175e42fc47cb6cd2772cccb7ac3ff59fd2d1a4dd"
+source = "git+https://github.com/Diora-Network/frontier?branch=polkadot-v0.9.20#60a1aa317c4fe8e298048fd5476d9e4e598460ab"
 dependencies = [
  "fp-storage",
  "kvdb-rocksdb",
@@ -2487,7 +2487,7 @@ dependencies = [
 [[package]]
 name = "fc-mapping-sync"
 version = "2.0.0-dev"
-source = "git+https://github.com/Diora-Network/frontier?branch=polkadot-v0.9.20#175e42fc47cb6cd2772cccb7ac3ff59fd2d1a4dd"
+source = "git+https://github.com/Diora-Network/frontier?branch=polkadot-v0.9.20#60a1aa317c4fe8e298048fd5476d9e4e598460ab"
 dependencies = [
  "fc-db",
  "fp-consensus",
@@ -2504,7 +2504,7 @@ dependencies = [
 [[package]]
 name = "fc-rpc"
 version = "2.0.0-dev"
-source = "git+https://github.com/Diora-Network/frontier?branch=polkadot-v0.9.20#175e42fc47cb6cd2772cccb7ac3ff59fd2d1a4dd"
+source = "git+https://github.com/Diora-Network/frontier?branch=polkadot-v0.9.20#60a1aa317c4fe8e298048fd5476d9e4e598460ab"
 dependencies = [
  "ethereum",
  "ethereum-types",
@@ -2547,7 +2547,7 @@ dependencies = [
 [[package]]
 name = "fc-rpc-core"
 version = "1.1.0-dev"
-source = "git+https://github.com/Diora-Network/frontier?branch=polkadot-v0.9.20#175e42fc47cb6cd2772cccb7ac3ff59fd2d1a4dd"
+source = "git+https://github.com/Diora-Network/frontier?branch=polkadot-v0.9.20#60a1aa317c4fe8e298048fd5476d9e4e598460ab"
 dependencies = [
  "ethereum",
  "ethereum-types",
@@ -2675,7 +2675,7 @@ dependencies = [
 [[package]]
 name = "fp-consensus"
 version = "2.0.0-dev"
-source = "git+https://github.com/Diora-Network/frontier?branch=polkadot-v0.9.20#175e42fc47cb6cd2772cccb7ac3ff59fd2d1a4dd"
+source = "git+https://github.com/Diora-Network/frontier?branch=polkadot-v0.9.20#60a1aa317c4fe8e298048fd5476d9e4e598460ab"
 dependencies = [
  "ethereum",
  "parity-scale-codec",
@@ -2687,7 +2687,7 @@ dependencies = [
 [[package]]
 name = "fp-evm"
 version = "3.0.0-dev"
-source = "git+https://github.com/Diora-Network/frontier?branch=polkadot-v0.9.20#175e42fc47cb6cd2772cccb7ac3ff59fd2d1a4dd"
+source = "git+https://github.com/Diora-Network/frontier?branch=polkadot-v0.9.20#60a1aa317c4fe8e298048fd5476d9e4e598460ab"
 dependencies = [
  "evm",
  "frame-support",
@@ -2700,7 +2700,7 @@ dependencies = [
 [[package]]
 name = "fp-rpc"
 version = "3.0.0-dev"
-source = "git+https://github.com/Diora-Network/frontier?branch=polkadot-v0.9.20#175e42fc47cb6cd2772cccb7ac3ff59fd2d1a4dd"
+source = "git+https://github.com/Diora-Network/frontier?branch=polkadot-v0.9.20#60a1aa317c4fe8e298048fd5476d9e4e598460ab"
 dependencies = [
  "ethereum",
  "ethereum-types",
@@ -2717,7 +2717,7 @@ dependencies = [
 [[package]]
 name = "fp-self-contained"
 version = "1.0.0-dev"
-source = "git+https://github.com/Diora-Network/frontier?branch=polkadot-v0.9.20#175e42fc47cb6cd2772cccb7ac3ff59fd2d1a4dd"
+source = "git+https://github.com/Diora-Network/frontier?branch=polkadot-v0.9.20#60a1aa317c4fe8e298048fd5476d9e4e598460ab"
 dependencies = [
  "ethereum",
  "frame-support",
@@ -2733,7 +2733,7 @@ dependencies = [
 [[package]]
 name = "fp-storage"
 version = "2.0.0"
-source = "git+https://github.com/Diora-Network/frontier?branch=polkadot-v0.9.20#175e42fc47cb6cd2772cccb7ac3ff59fd2d1a4dd"
+source = "git+https://github.com/Diora-Network/frontier?branch=polkadot-v0.9.20#60a1aa317c4fe8e298048fd5476d9e4e598460ab"
 dependencies = [
  "parity-scale-codec",
 ]
@@ -5634,7 +5634,7 @@ dependencies = [
 [[package]]
 name = "pallet-base-fee"
 version = "1.0.0"
-source = "git+https://github.com/Diora-Network/frontier?branch=polkadot-v0.9.20#175e42fc47cb6cd2772cccb7ac3ff59fd2d1a4dd"
+source = "git+https://github.com/Diora-Network/frontier?branch=polkadot-v0.9.20#60a1aa317c4fe8e298048fd5476d9e4e598460ab"
 dependencies = [
  "fp-evm",
  "frame-support",
@@ -5839,7 +5839,7 @@ dependencies = [
 [[package]]
 name = "pallet-ethereum"
 version = "4.0.0-dev"
-source = "git+https://github.com/Diora-Network/frontier?branch=polkadot-v0.9.20#175e42fc47cb6cd2772cccb7ac3ff59fd2d1a4dd"
+source = "git+https://github.com/Diora-Network/frontier?branch=polkadot-v0.9.20#60a1aa317c4fe8e298048fd5476d9e4e598460ab"
 dependencies = [
  "ethereum",
  "ethereum-types",
@@ -5879,7 +5879,7 @@ dependencies = [
 [[package]]
 name = "pallet-evm"
 version = "6.0.0-dev"
-source = "git+https://github.com/Diora-Network/frontier?branch=polkadot-v0.9.20#175e42fc47cb6cd2772cccb7ac3ff59fd2d1a4dd"
+source = "git+https://github.com/Diora-Network/frontier?branch=polkadot-v0.9.20#60a1aa317c4fe8e298048fd5476d9e4e598460ab"
 dependencies = [
  "evm",
  "fp-evm",
@@ -5905,7 +5905,7 @@ dependencies = [
 [[package]]
 name = "pallet-evm-precompile-blake2"
 version = "2.0.0-dev"
-source = "git+https://github.com/Diora-Network/frontier?branch=polkadot-v0.9.20#175e42fc47cb6cd2772cccb7ac3ff59fd2d1a4dd"
+source = "git+https://github.com/Diora-Network/frontier?branch=polkadot-v0.9.20#60a1aa317c4fe8e298048fd5476d9e4e598460ab"
 dependencies = [
  "fp-evm",
 ]
@@ -5913,7 +5913,7 @@ dependencies = [
 [[package]]
 name = "pallet-evm-precompile-bn128"
 version = "2.0.0-dev"
-source = "git+https://github.com/Diora-Network/frontier?branch=polkadot-v0.9.20#175e42fc47cb6cd2772cccb7ac3ff59fd2d1a4dd"
+source = "git+https://github.com/Diora-Network/frontier?branch=polkadot-v0.9.20#60a1aa317c4fe8e298048fd5476d9e4e598460ab"
 dependencies = [
  "fp-evm",
  "sp-core",
@@ -5923,7 +5923,7 @@ dependencies = [
 [[package]]
 name = "pallet-evm-precompile-dispatch"
 version = "2.0.0-dev"
-source = "git+https://github.com/Diora-Network/frontier?branch=polkadot-v0.9.20#175e42fc47cb6cd2772cccb7ac3ff59fd2d1a4dd"
+source = "git+https://github.com/Diora-Network/frontier?branch=polkadot-v0.9.20#60a1aa317c4fe8e298048fd5476d9e4e598460ab"
 dependencies = [
  "fp-evm",
  "frame-support",
@@ -5933,7 +5933,7 @@ dependencies = [
 [[package]]
 name = "pallet-evm-precompile-modexp"
 version = "2.0.0-dev"
-source = "git+https://github.com/Diora-Network/frontier?branch=polkadot-v0.9.20#175e42fc47cb6cd2772cccb7ac3ff59fd2d1a4dd"
+source = "git+https://github.com/Diora-Network/frontier?branch=polkadot-v0.9.20#60a1aa317c4fe8e298048fd5476d9e4e598460ab"
 dependencies = [
  "fp-evm",
  "num",
@@ -5942,7 +5942,7 @@ dependencies = [
 [[package]]
 name = "pallet-evm-precompile-sha3fips"
 version = "2.0.0-dev"
-source = "git+https://github.com/Diora-Network/frontier?branch=polkadot-v0.9.20#175e42fc47cb6cd2772cccb7ac3ff59fd2d1a4dd"
+source = "git+https://github.com/Diora-Network/frontier?branch=polkadot-v0.9.20#60a1aa317c4fe8e298048fd5476d9e4e598460ab"
 dependencies = [
  "fp-evm",
  "tiny-keccak",
@@ -5951,7 +5951,7 @@ dependencies = [
 [[package]]
 name = "pallet-evm-precompile-simple"
 version = "2.0.0-dev"
-source = "git+https://github.com/Diora-Network/frontier?branch=polkadot-v0.9.20#175e42fc47cb6cd2772cccb7ac3ff59fd2d1a4dd"
+source = "git+https://github.com/Diora-Network/frontier?branch=polkadot-v0.9.20#60a1aa317c4fe8e298048fd5476d9e4e598460ab"
 dependencies = [
  "fp-evm",
  "ripemd",
@@ -12735,7 +12735,7 @@ dependencies = [
 
 [[package]]
 name = "zstd-sys"
-version = "2.0.1+zstd.1.5.2"
+version = "1.6.3+zstd.1.5.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "fc49afa5c8d634e75761feda8c592051e7eeb4683ba827211eb0d731d3402ea8"
 dependencies = [
