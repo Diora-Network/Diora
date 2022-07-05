@@ -18,7 +18,7 @@ path = "src/main.rs"
 
 [dependencies]
 codec = { package = "parity-scale-codec", version = "3.0.0" }
-clap = { version = "3.1", features = [ "derive" ] }
+clap = { version = "3.0", features = [ "derive" ] }
 derive_more = "0.99.2"
 hex-literal = "0.3.1"
 log = "0.4.14"
@@ -30,8 +30,11 @@ maplit = "1.0.2"
 jsonrpc-core = "18.0.0"
 
 # Local Dependencies
-nimbus-consensus = { path = "./nimbus-consensus" }
-nimbus-primitives = { path = "../node/nimbus-primitives" }
+nimbus-consensus = { git = "https://github.com/PureStake/nimbus", branch = "moonbeam-polkadot-v0.9.20" }
+# TODO we should be able to depend only on the primitives crate once we move the inherent data provider there.
+nimbus-primitives = { git = "https://github.com/PureStake/nimbus", branch = "moonbeam-polkadot-v0.9.20" }
+pallet-author-inherent = { git = "https://github.com/PureStake/nimbus", branch = "moonbeam-polkadot-v0.9.20" }
+
 diora-runtime = { path = "../runtime" }
 
 # Substrate Dependencies
