@@ -103,7 +103,6 @@ jsonrpc-pubsub = "18.0.0"
 fp-consensus = { git = "https://github.com/Diora-Network/frontier", branch = "polkadot-v0.9.20" }
 fp-rpc = { git = "https://github.com/Diora-Network/frontier", branch = "polkadot-v0.9.20" }
 fp-storage = { git = "https://github.com/Diora-Network/frontier", branch = "polkadot-v0.9.20" }
-fc-consensus  = { git = "https://github.com/Diora-Network/frontier", branch = "polkadot-v0.9.20" }
 fc-rpc-core = { git = "https://github.com/Diora-Network/frontier", branch = "polkadot-v0.9.20" }
 fc-rpc = { git = "https://github.com/Diora-Network/frontier", branch = "polkadot-v0.9.20" }
 fc-mapping-sync = { git = "https://github.com/Diora-Network/frontier", branch = "polkadot-v0.9.20" }
