@@ -19,14 +19,9 @@ serde = { version = "1.0.119", optional = true, features = [ "derive" ] }
 smallvec = "1.6.1"
 
 # Diora Dependencies
-
 pallet-template = { path = "../pallets/template", default-features = false }
-parachain-staking = { path = "../pallets/parachain-staking", default-features = false }
-pallet-dapps-staking = { path = "../pallets/dapps-staking", default-features = false }
-pallet-ethereum-chain-id = { path = "../pallets/ethereum-chain-id", default-features = false }
 
 # Substrate Dependencies
-
 ## Substrate Primitive Dependencies
 sp-api = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.20", default-features = false }
 sp-block-builder = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.20", default-features = false }
@@ -52,12 +47,10 @@ frame-system-rpc-runtime-api = { git = "https://github.com/paritytech/substrate"
 pallet-balances = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.20", default-features = false }
 pallet-randomness-collective-flip = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.20", default-features = false }
 pallet-session = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.20", default-features = false }
+pallet-sudo = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.20", default-features = false }
 pallet-timestamp = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.20", default-features = false }
 pallet-transaction-payment = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.20", default-features = false }
 pallet-transaction-payment-rpc-runtime-api = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.20", default-features = false }
-pallet-sudo = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.20", default-features = false }
-pallet-scheduler = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.20", default-features = false }
-pallet-utility = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.20", default-features = false }
 
 # Cumulus dependencies
 cumulus-pallet-dmp-queue = { git = "https://github.com/paritytech/cumulus", branch = "polkadot-v0.9.20", default-features = false }
@@ -71,24 +64,22 @@ pallet-collator-selection = { git = "https://github.com/paritytech/cumulus", bra
 parachain-info = { git = "https://github.com/paritytech/cumulus", branch = "polkadot-v0.9.20", default-features = false }
 
 # Nimbus Dependencies
-
-nimbus-primitives = { git = "https://github.com/PureStake/nimbus", branch = "moonbeam-polkadot-v0.9.20", default-features = false }
-pallet-author-inherent = { git = "https://github.com/PureStake/nimbus", branch = "moonbeam-polkadot-v0.9.20", default-features = false }
-pallet-author-slot-filter = { git = "https://github.com/PureStake/nimbus", branch = "moonbeam-polkadot-v0.9.20", default-features = false }
-
+nimbus-primitives = { path = "../node/nimbus-primitives", default-features = false }
+pallet-author-inherent = { path = "../pallets/author-inherent", default-features = false }
+pallet-author-slot-filter = { path = "../pallets/author-slot-filter", default-features = false }
 
 # Frontier Dependencies
-fp-rpc = { git = "https://github.com/PureStake/frontier", branch = "polkadot-v0.9.20", default-features = false }
-fp-self-contained = { git = "https://github.com/PureStake/frontier", branch = "polkadot-v0.9.20", default-features = false }
-pallet-base-fee = { git = "https://github.com/PureStake/frontier", branch = "polkadot-v0.9.20", default-features = false }
-pallet-ethereum = { git = "https://github.com/PureStake/frontier", branch = "polkadot-v0.9.20", default-features = false }
-pallet-evm = { git = "https://github.com/PureStake/frontier", branch = "polkadot-v0.9.20", default-features = false }
-pallet-evm-precompile-blake2 = { git = "https://github.com/PureStake/frontier", branch = "polkadot-v0.9.20", default-features = false }
-pallet-evm-precompile-bn128 = { git = "https://github.com/PureStake/frontier", branch = "polkadot-v0.9.20", default-features = false }
-pallet-evm-precompile-dispatch = { git = "https://github.com/PureStake/frontier", branch = "polkadot-v0.9.20", default-features = false }
-pallet-evm-precompile-modexp = { git = "https://github.com/PureStake/frontier", branch = "polkadot-v0.9.20", default-features = false }
-pallet-evm-precompile-sha3fips = { git = "https://github.com/PureStake/frontier", branch = "polkadot-v0.9.20", default-features = false }
-pallet-evm-precompile-simple = { git = "https://github.com/PureStake/frontier", branch = "polkadot-v0.9.20", default-features = false }
+fp-rpc = { git = "https://github.com/Diora-Network/frontier", branch = "polkadot-v0.9.20", default-features = false }
+fp-self-contained = { git = "https://github.com/Diora-Network/frontier", branch = "polkadot-v0.9.20", default-features = false }
+pallet-base-fee = { git = "https://github.com/Diora-Network/frontier", branch = "polkadot-v0.9.20", default-features = false }
+pallet-ethereum = { git = "https://github.com/Diora-Network/frontier", branch = "polkadot-v0.9.20", default-features = false }
+pallet-evm = { git = "https://github.com/Diora-Network/frontier", branch = "polkadot-v0.9.20", default-features = false }
+pallet-evm-precompile-blake2 = { git = "https://github.com/Diora-Network/frontier", branch = "polkadot-v0.9.20", default-features = false }
+pallet-evm-precompile-bn128 = { git = "https://github.com/Diora-Network/frontier", branch = "polkadot-v0.9.20", default-features = false }
+pallet-evm-precompile-dispatch = { git = "https://github.com/Diora-Network/frontier", branch = "polkadot-v0.9.20", default-features = false }
+pallet-evm-precompile-modexp = { git = "https://github.com/Diora-Network/frontier", branch = "polkadot-v0.9.20", default-features = false }
+pallet-evm-precompile-sha3fips = { git = "https://github.com/Diora-Network/frontier", branch = "polkadot-v0.9.20", default-features = false }
+pallet-evm-precompile-simple = { git = "https://github.com/Diora-Network/frontier", branch = "polkadot-v0.9.20", default-features = false }
 
 # Polkadot Dependencies
 pallet-xcm = { git = "https://github.com/paritytech/polkadot", branch = "release-v0.9.20", default-features = false }
@@ -97,12 +88,6 @@ polkadot-runtime-common = { git = "https://github.com/paritytech/polkadot", bran
 xcm = { git = "https://github.com/paritytech/polkadot", branch = "release-v0.9.20", default-features = false }
 xcm-builder = { git = "https://github.com/paritytech/polkadot", branch = "release-v0.9.20", default-features = false }
 xcm-executor = { git = "https://github.com/paritytech/polkadot", branch = "release-v0.9.20", default-features = false }
-
-# Gov
-
-pallet-collective = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.20", default-features = false }
-pallet-democracy = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.20", default-features = false }
-pallet-treasury = { git = 'https://github.com/paritytech/substrate', branch = "polkadot-v0.9.20", default-features = false }
 
 [build-dependencies]
 substrate-wasm-builder = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.20" }
@@ -127,15 +112,11 @@ std = [
 	"nimbus-primitives/std",
 	"pallet-author-inherent/std",
 	"pallet-author-slot-filter/std",
-	"parachain-staking/std",
-	"pallet-dapps-staking/std",
 	"pallet-balances/std",
 	"pallet-collator-selection/std",
 	"pallet-randomness-collective-flip/std",
 	"pallet-session/std",
 	"pallet-sudo/std",
-	"pallet-scheduler/std",
-	"pallet-utility/std",
 	"pallet-template/std",
 	"pallet-timestamp/std",
 	"pallet-transaction-payment-rpc-runtime-api/std",
@@ -161,14 +142,10 @@ std = [
 	"xcm/std",
 	"pallet-evm/std",
 	"pallet-ethereum/std",
-	"pallet-ethereum-chain-id/std",
 	"pallet-base-fee/std",
 	"pallet-evm-precompile-simple/std",
 	"pallet-evm-precompile-sha3fips/std",
 	"fp-rpc/std",
-	"pallet-collective/std",
-	"pallet-democracy/std",
-	"pallet-treasury/std",
 ]
 
 runtime-benchmarks = [
