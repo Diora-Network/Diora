@@ -199,9 +199,11 @@ impl fp_self_contained::SelfContainedCall for Call {
     fn pre_dispatch_self_contained(
         &self,
         info: &Self::SignedInfo,
+        dispatch_info: &DispatchInfoOf<Call>,
+        len: usize,
     ) -> Option<Result<(), TransactionValidityError>> {
         match self {
-            Call::Ethereum(call) => call.pre_dispatch_self_contained(info),
+            Call::Ethereum(call) => call.pre_dispatch_self_contained(info, dispatch_info, len),
             _ => None,
         }
     }
@@ -723,7 +725,7 @@ impl cumulus_pallet_dmp_queue::Config for Runtime {
 
 impl pallet_author_inherent::Config for Runtime {
     type AccountLookup = PotentialAuthorSet;
-    type EventHandler = ParachainStaking;
+    type EventHandler = ();
     type CanAuthor = AuthorFilter;
     // We start a new slot each time we see a new relay block.
     type SlotBeacon = cumulus_pallet_parachain_system::RelaychainBlockNumberProvider<Self>;
@@ -873,7 +875,6 @@ impl pallet_evm::Config for Runtime {
     type OnChargeTransaction = pallet_evm::EVMCurrencyAdapter<Balances, DealWithFees<Runtime>>;
     type BlockGasLimit = BlockGasLimit;
     type FindAuthor = ();
-    type WeightInfo = pallet_evm::weights::SubstrateWeight<Self>;
 }
 
 impl pallet_ethereum::Config for Runtime {
@@ -1085,20 +1086,22 @@ impl_runtime_apis! {
             };
 
             let is_transactional = false;
+            let validate = true;
             <Runtime as pallet_evm::Config>::Runner::call(
-                from,
-                to,
-                data,
-                value,
-                gas_limit.low_u64(),
-                max_fee_per_gas,
-                max_priority_fee_per_gas,
-                nonce,
-                access_list.unwrap_or_default(),
-                is_transactional,
-                config.as_ref().unwrap_or(<Runtime as pallet_evm::Config>::config()),
-            ).map_err(|err| err.error.into())
-        }
+                        from,
+                        to,
+                        data,
+                        value,
+                        gas_limit.low_u64(),
+                        max_fee_per_gas,
+                        max_priority_fee_per_gas,
+                        nonce,
+                        access_list.unwrap_or_default(),
+                        is_transactional,
+                        validate,
+                        config.as_ref().unwrap_or(<Runtime as pallet_evm::Config>::config()),
+                    ).map_err(|err| err.error.into())
+                }
 
         fn create(
             from: H160,
@@ -1120,19 +1123,22 @@ impl_runtime_apis! {
             };
 
             let is_transactional = false;
+            let validate = true;
             <Runtime as pallet_evm::Config>::Runner::create(
-                from,
-                data,
-                value,
-                gas_limit.low_u64(),
-                max_fee_per_gas,
-                max_priority_fee_per_gas,
-                nonce,
-                access_list.unwrap_or_default(),
-                is_transactional,
-                config.as_ref().unwrap_or(<Runtime as pallet_evm::Config>::config()),
-            ).map_err(|err| err.error.into())
-        }
+                        from,
+                        data,
+                        value,
+                        gas_limit.low_u64(),
+                        max_fee_per_gas,
+                        max_priority_fee_per_gas,
+                        nonce,
+                        access_list.unwrap_or_default(),
+                        is_transactional,
+                        validate,
+                        config.as_ref().unwrap_or(<Runtime as pallet_evm::Config>::config()),
+                    ).map_err(|err| err.error.into())
+                }
+
 
         fn current_transaction_statuses() -> Option<Vec<TransactionStatus>> {
             Ethereum::current_transaction_statuses()

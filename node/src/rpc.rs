@@ -23,7 +23,7 @@ use fc_rpc::{
 };
 use fc_rpc_core::types::{FeeHistoryCache, FilterPool};
 use fp_storage::EthereumStorageSchema;
-use jsonrpc_pubsub::manager::SubscriptionManager;
+use jsonrpsee::RpcModule;
 use sc_client_api::{
     backend::{AuxStore, Backend, StateBackend, StorageProvider},
     client::BlockchainEvents,
@@ -103,7 +103,7 @@ where
 pub fn create_full<C, P, BE, A>(
     deps: FullDeps<C, P, A>,
     subscription_task_executor: SubscriptionTaskExecutor,
-) -> jsonrpc_core::IoHandler<sc_rpc::Metadata>
+) -> Result<RpcModule<()>, Box<dyn std::error::Error + Send + Sync>>
 where
     BE: Backend<Block> + 'static,
     BE::State: StateBackend<BlakeTwo256>,
@@ -119,10 +119,10 @@ where
     P: TransactionPool<Block = Block> + 'static,
     A: ChainApi<Block = Block> + 'static,
 {
-    use pallet_transaction_payment_rpc::{TransactionPayment, TransactionPaymentApi};
-    use substrate_frame_rpc_system::{FullSystem, SystemApi};
+    use pallet_transaction_payment_rpc::{TransactionPayment, TransactionPaymentApiServer};
+    use substrate_frame_rpc_system::{System, SystemApiServer};
 
-    let mut io = jsonrpc_core::IoHandler::default();
+    let mut io = RpcModule::new(());
 
     let FullDeps {
         client,
@@ -140,71 +140,73 @@ where
         block_data_cache,
     } = deps;
 
-    io.extend_with(SystemApi::to_delegate(FullSystem::new(
-        client.clone(),
-        pool.clone(),
-        deny_unsafe,
-    )));
-
-    io.extend_with(TransactionPaymentApi::to_delegate(TransactionPayment::new(
-        client.clone(),
-    )));
+    io.merge(System::new(Arc::clone(&client), Arc::clone(&pool), deny_unsafe).into_rpc())?;
+    io.merge(TransactionPayment::new(Arc::clone(&client)).into_rpc())?;
 
     // eth api
     {
         use fc_rpc::{
-            Eth, EthApi, EthFilter, EthFilterApi, EthPubSub, EthPubSubApi, HexEncodedIdProvider,
-            Net, NetApi, Web3, Web3Api,
+            Eth, EthApiServer, EthFilter, EthFilterApiServer, EthPubSub, EthPubSubApiServer, Net,
+            NetApiServer, Web3, Web3ApiServer,
         };
-        io.extend_with(EthApi::to_delegate(Eth::new(
-            client.clone(),
-            pool.clone(),
-            graph,
-            Some(diora_runtime::TransactionConverter),
-            network.clone(),
-            Vec::new(),
-            overrides.clone(),
-            backend.clone(),
-            is_authority,
-            block_data_cache.clone(),
-            fc_rpc::format::Geth,
-            fee_history_cache,
-            fee_history_limit,
-        )));
+        io.merge(
+            Eth::new(
+                Arc::clone(&client),
+                Arc::clone(&pool),
+                graph,
+                Some(diora_runtime::TransactionConverter),
+                Arc::clone(&network),
+                Vec::new(),
+                Arc::clone(&overrides),
+                Arc::clone(&backend),
+                is_authority,
+                Arc::clone(&block_data_cache),
+                fc_rpc::format::Geth,
+                fee_history_cache,
+                fee_history_limit,
+            )
+            .into_rpc(),
+        )?;
 
         if let Some(filter_pool) = filter_pool {
-            io.extend_with(EthFilterApi::to_delegate(EthFilter::new(
-                client.clone(),
-                backend,
-                filter_pool,
-                500_usize, // max stored filters
-                max_past_logs,
-                block_data_cache,
-            )));
+            io.merge(
+                EthFilter::new(
+                    client.clone(),
+                    backend,
+                    filter_pool,
+                    500_usize, // max stored filters
+                    max_past_logs,
+                    block_data_cache,
+                )
+                .into_rpc(),
+            )?;
         }
 
-        io.extend_with(NetApi::to_delegate(Net::new(
-            client.clone(),
-            network.clone(),
-            // Whether to format the `peer_count` response as Hex (default) or not.
-            true,
-        )));
+        io.merge(
+            Net::new(
+                Arc::clone(&client),
+                network.clone(),
+                // Whether to format the `peer_count` response as Hex (default) or not.
+                true,
+            )
+            .into_rpc(),
+        )?;
 
-        io.extend_with(Web3Api::to_delegate(Web3::new(client.clone())));
+        io.merge(Web3::new(Arc::clone(&client)).into_rpc())?;
 
-        io.extend_with(EthPubSubApi::to_delegate(EthPubSub::new(
-            pool,
-            client.clone(),
-            network,
-            SubscriptionManager::<HexEncodedIdProvider>::with_id_provider(
-                HexEncodedIdProvider::default(),
-                Arc::new(subscription_task_executor),
-            ),
-            overrides,
-        )));
+        io.merge(
+            EthPubSub::new(
+                pool,
+                Arc::clone(&client),
+                network,
+                subscription_task_executor,
+                overrides,
+            )
+            .into_rpc(),
+        )?;
     }
 
-    io
+    Ok(io)
 }
 
 pub struct SpawnTasksParams<'a, B: BlockT, C, BE> {

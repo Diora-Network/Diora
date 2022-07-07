@@ -245,7 +245,9 @@ async fn start_node_impl<RB, BIC>(
 where
     sc_client_api::StateBackendFor<TFullBackend<Block>, Block>: sp_api::StateBackend<BlakeTwo256>,
     TemplateRuntimeExecutor: sc_executor::NativeExecutionDispatch + 'static,
-    RB: Fn(Arc<FullClient>) -> Result<jsonrpc_core::IoHandler<sc_rpc::Metadata>, sc_service::Error>
+    RB: Fn(
+            Arc<TFullClient<Block, RuntimeApi, TemplateRuntimeExecutor>>,
+        ) -> Result<jsonrpsee::RpcModule<()>, sc_service::Error>
         + Send
         + 'static,
     BIC: FnOnce(
@@ -283,6 +285,7 @@ where
         &parachain_config,
         telemetry_worker_handle,
         &mut task_manager,
+        None,
     )
     .map_err(|e| match e {
         RelayChainError::ServiceError(polkadot_service::Error::Sub(x)) => x,
@@ -309,8 +312,8 @@ where
             warp_sync: None,
         })?;
 
-    let subscription_task_executor =
-        sc_rpc::SubscriptionTaskExecutor::new(task_manager.spawn_handle());
+    // let subscription_task_executor =
+    //     sc_rpc::SubscriptionTaskExecutor::new(task_manager.spawn_handle());
     let overrides = crate::rpc::overrides_handle(client.clone());
     let fee_history_limit = 2048;
 
@@ -344,7 +347,7 @@ where
         let is_authority = false;
         let max_past_logs = 10000;
 
-        Box::new(move |deny_unsafe, _| {
+        move |deny_unsafe, subscription_task_executor| {
             let deps = crate::rpc::FullDeps {
                 client: client.clone(),
                 pool: pool.clone(),
@@ -361,15 +364,12 @@ where
                 block_data_cache: block_data_cache.clone(),
             };
 
-            Ok(crate::rpc::create_full(
-                deps,
-                subscription_task_executor.clone(),
-            ))
-        })
+            crate::rpc::create_full(deps, subscription_task_executor).map_err(Into::into)
+        }
     };
 
     sc_service::spawn_tasks(sc_service::SpawnTasksParams {
-        rpc_extensions_builder,
+        rpc_builder: Box::new(rpc_extensions_builder),
         client: client.clone(),
         transaction_pool: transaction_pool.clone(),
         task_manager: &mut task_manager,
@@ -453,7 +453,7 @@ pub async fn start_parachain_node(
         polkadot_config,
         collator_options,
         id,
-        |_| Ok(Default::default()),
+        |_| Ok(jsonrpsee::RpcModule::new(())),
         |client,
          prometheus_registry,
          telemetry,
@@ -471,6 +471,32 @@ pub async fn start_parachain_node(
                 telemetry.clone(),
             );
 
+            let provider = move |_, (relay_parent, validation_data, _author_id)| {
+                let relay_chain_interface = relay_chain_interface.clone();
+                async move {
+                    let parachain_inherent =
+                        cumulus_primitives_parachain_inherent::ParachainInherentData::create_at(
+                            relay_parent,
+                            &relay_chain_interface,
+                            &validation_data,
+                            id,
+                        )
+                        .await;
+
+                    let time = sp_timestamp::InherentDataProvider::from_system_time();
+
+                    let parachain_inherent = parachain_inherent.ok_or_else(|| {
+                        Box::<dyn std::error::Error + Send + Sync>::from(
+                            "Failed to create parachain inherent",
+                        )
+                    })?;
+
+                    let nimbus_inherent = nimbus_primitives::InherentDataProvider;
+
+                    Ok((time, parachain_inherent, nimbus_inherent))
+                }
+            };
+
             Ok(NimbusConsensus::build(BuildNimbusConsensusParams {
                 para_id: id,
                 proposer_factory,
@@ -478,35 +504,7 @@ pub async fn start_parachain_node(
                 parachain_client: client.clone(),
                 keystore,
                 skip_prediction: force_authoring,
-                create_inherent_data_providers: move |_,
-                                                      (
-                    relay_parent,
-                    validation_data,
-                    _author_id,
-                )| {
-                    let relay_chain_interface = relay_chain_interface.clone();
-                    async move {
-                        let parachain_inherent =
-							cumulus_primitives_parachain_inherent::ParachainInherentData::create_at(
-								relay_parent,
-								&relay_chain_interface,
-								&validation_data,
-								id,
-							).await;
-
-                        let time = sp_timestamp::InherentDataProvider::from_system_time();
-
-                        let parachain_inherent = parachain_inherent.ok_or_else(|| {
-                            Box::<dyn std::error::Error + Send + Sync>::from(
-                                "Failed to create parachain inherent",
-                            )
-                        })?;
-
-                        let nimbus_inherent = nimbus_primitives::InherentDataProvider;
-
-                        Ok((time, parachain_inherent, nimbus_inherent))
-                    }
-                },
+                create_inherent_data_providers: provider,
             }))
         },
     )
@@ -551,8 +549,8 @@ pub fn start_instant_seal_node(config: Configuration) -> Result<TaskManager, sc_
     let is_authority = config.role.is_authority();
     let prometheus_registry = config.prometheus_registry().cloned();
 
-    let subscription_task_executor =
-        sc_rpc::SubscriptionTaskExecutor::new(task_manager.spawn_handle());
+    // let subscription_task_executor =
+    //     sc_rpc::SubscriptionTaskExecutor::new(task_manager.spawn_handle());
     let overrides = crate::rpc::overrides_handle(client.clone());
     let fee_history_limit = 2048;
 
@@ -575,7 +573,7 @@ pub fn start_instant_seal_node(config: Configuration) -> Result<TaskManager, sc_
         let is_authority = false;
         let max_past_logs = 10000;
 
-        Box::new(move |deny_unsafe, _| {
+        move |deny_unsafe, subscription_task_executor| {
             let deps = crate::rpc::FullDeps {
                 client: client.clone(),
                 pool: pool.clone(),
@@ -592,11 +590,8 @@ pub fn start_instant_seal_node(config: Configuration) -> Result<TaskManager, sc_
                 block_data_cache: block_data_cache.clone(),
             };
 
-            Ok(crate::rpc::create_full(
-                deps,
-                subscription_task_executor.clone(),
-            ))
-        })
+            crate::rpc::create_full(deps, subscription_task_executor).map_err(Into::into)
+        }
     };
 
     sc_service::spawn_tasks(sc_service::SpawnTasksParams {
@@ -605,7 +600,7 @@ pub fn start_instant_seal_node(config: Configuration) -> Result<TaskManager, sc_
         keystore: keystore_container.sync_keystore(),
         task_manager: &mut task_manager,
         transaction_pool: transaction_pool.clone(),
-        rpc_extensions_builder,
+        rpc_builder: Box::new(rpc_extensions_builder),
         backend,
         system_rpc_tx,
         config,
