@@ -145,7 +145,7 @@ pub fn local_testnet_config() -> ChainSpec {
                     ),
                 ],
                 vec![
-                    AccountId::from(hex!("e782fE6487d55904244A955775da4662220Bb2AB")),
+                                        AccountId::from(hex!("e782fE6487d55904244A955775da4662220Bb2AB")),
 					AccountId::from(hex!("95956cA8bcfD13C1e85F12c10ED5A8d3c3992bC1")),
 					AccountId::from(hex!("49187f733d3b03cd3400e3f42383847CB8Dad033")),
 					AccountId::from(hex!("82e0CB2B2a054E41b3A62fe78155F338256D1dbB")),
