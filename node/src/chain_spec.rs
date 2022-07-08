@@ -136,29 +136,21 @@ pub fn local_testnet_config() -> ChainSpec {
                 // initial collators.
                 vec![
                     (
-                        get_account_id_from_seed::<sr25519::Public>("Alice"),
+                        AccountId::from(hex!("e782fE6487d55904244A955775da4662220Bb2AB")),
                         get_collator_keys_from_seed("Alice"),
                     ),
                     (
-                        get_account_id_from_seed::<sr25519::Public>("Bob"),
+                        AccountId::from(hex!("95956cA8bcfD13C1e85F12c10ED5A8d3c3992bC1")),
                         get_collator_keys_from_seed("Bob"),
                     ),
                 ],
                 vec![
-                    get_account_id_from_seed::<sr25519::Public>("Alice"),
-                    get_account_id_from_seed::<sr25519::Public>("Bob"),
-                    get_account_id_from_seed::<sr25519::Public>("Charlie"),
-                    get_account_id_from_seed::<sr25519::Public>("Dave"),
-                    get_account_id_from_seed::<sr25519::Public>("Eve"),
-                    get_account_id_from_seed::<sr25519::Public>("Ferdie"),
-                    get_account_id_from_seed::<sr25519::Public>("Alice//stash"),
-                    get_account_id_from_seed::<sr25519::Public>("Bob//stash"),
-                    get_account_id_from_seed::<sr25519::Public>("Charlie//stash"),
-                    get_account_id_from_seed::<sr25519::Public>("Dave//stash"),
-                    get_account_id_from_seed::<sr25519::Public>("Eve//stash"),
-                    get_account_id_from_seed::<sr25519::Public>("Ferdie//stash"),
+                    AccountId::from(hex!("e782fE6487d55904244A955775da4662220Bb2AB")),
+					AccountId::from(hex!("95956cA8bcfD13C1e85F12c10ED5A8d3c3992bC1")),
+					AccountId::from(hex!("49187f733d3b03cd3400e3f42383847CB8Dad033")),
+					AccountId::from(hex!("82e0CB2B2a054E41b3A62fe78155F338256D1dbB")),
                 ],
-                2000.into(),
+                4000.into(),
             )
         },
         // Bootnodes
@@ -166,7 +158,7 @@ pub fn local_testnet_config() -> ChainSpec {
         // Telemetry
         None,
         // Protocol ID
-        Some("template-local"),
+        None,
         // Fork ID
         None,
         // Properties
@@ -174,7 +166,7 @@ pub fn local_testnet_config() -> ChainSpec {
         // Extensions
         Extensions {
             relay_chain: "rococo".into(), // You MUST set this to the correct network!
-            para_id: 2000,
+            para_id: 4000,
         },
     )
 }
@@ -248,13 +240,13 @@ fn testnet_genesis(
             candidates: vec![
                 // Alice -> Alith
                 (
-                    get_account_id_from_seed::<sr25519::Public>("Alice"),
+                    AccountId::from(hex!("e782fE6487d55904244A955775da4662220Bb2AB")),
                     get_from_seed::<NimbusId>("Alice"),
                     1_000 * DIR * SUPPLY_FACTOR,
                 ),
                 // Bob -> Baltithar
                 (
-                    get_account_id_from_seed::<sr25519::Public>("Bob"),
+                    AccountId::from(hex!("95956cA8bcfD13C1e85F12c10ED5A8d3c3992bC1")),
                     get_from_seed::<NimbusId>("Bob"),
                     1_000 * DIR * SUPPLY_FACTOR,
                 ),
