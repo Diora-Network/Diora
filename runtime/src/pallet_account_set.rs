@@ -60,7 +60,7 @@ pub mod pallet {
             Self { mapping: vec![] }
         }
     }
-	
+    #[cfg(feature = "std")]
     impl std::fmt::Display for AccountId20 {
 	//TODO This is a pretty quck-n-dirty implementation. Perhaps we should add
 	// checksum casing here? I bet there is a crate for that.
