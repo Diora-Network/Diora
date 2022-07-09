@@ -6,6 +6,7 @@ use diora_runtime::{
     ParachainInfoConfig, ParachainStakingConfig, Perbill, PotentialAuthorSetConfig, Range,
     Signature, SudoConfig, SystemConfig, WASM_BINARY,
 };
+use hex_literal::hex;
 use sc_chain_spec::{ChainSpecExtension, ChainSpecGroup};
 use sc_service::ChainType;
 use serde::{Deserialize, Serialize};
