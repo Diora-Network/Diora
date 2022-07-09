@@ -18,6 +18,7 @@ pub mod pallet {
 
     use frame_support::pallet_prelude::*;
     #[cfg(feature = "std")]
+    use crate::H160;
     use log::warn;
     use nimbus_primitives::{AccountLookup, CanAuthor, NimbusId};
     use sp_std::vec::Vec;
