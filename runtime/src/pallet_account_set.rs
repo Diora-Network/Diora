@@ -77,6 +77,8 @@ pub mod pallet {
     /// This pallet is compatible with nimbus's author filtering system. Any account stored in this pallet
     /// is a valid author. Notice that this implementation does not have an inner filter, so it
     /// can only be the beginning of the nimbus filter pipeline.
+    
+    pub struct EthereumSigner([u8; 20]);
     impl From<[u8; 20]> for EthereumSigner {
 	fn from(x: [u8; 20]) -> Self {
 		EthereumSigner(x)
