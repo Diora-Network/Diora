@@ -60,6 +60,12 @@ pub mod pallet {
             Self { mapping: vec![] }
         }
     }
+   
+    pub struct AccountId20(pub [u8; 20]);
+
+    #[cfg(feature = "std")]
+    impl_serde::impl_fixed_hash_serde!(AccountId20, 20);
+
     #[cfg(feature = "std")]
     impl std::fmt::Display for AccountId20 {
 	//TODO This is a pretty quck-n-dirty implementation. Perhaps we should add
