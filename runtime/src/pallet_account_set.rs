@@ -55,6 +55,11 @@ pub mod pallet {
     }
 
     #[cfg(feature = "std")]
+    impl<T: Config> Default for GenesisConfig<T> {
+        fn default() -> Self {
+            Self { mapping: vec![] }
+        }
+    }
     impl From<[u8; 20]> for AccountId20 {
 	fn from(bytes: [u8; 20]) -> Self {
 		Self(bytes)
@@ -65,11 +70,6 @@ pub mod pallet {
 	fn into(self) -> [u8; 20] {
 		self.0
 	}
-    }
-    impl<T: Config> Default for GenesisConfig<T> {
-        fn default() -> Self {
-            Self { mapping: vec![] }
-        }
     }
 
     #[pallet::genesis_build]
