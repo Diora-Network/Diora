@@ -60,6 +60,22 @@ pub mod pallet {
             Self { mapping: vec![] }
         }
     }
+	
+    impl std::fmt::Display for AccountId20 {
+	//TODO This is a pretty quck-n-dirty implementation. Perhaps we should add
+	// checksum casing here? I bet there is a crate for that.
+	// Maybe this one https://github.com/miguelmota/rust-eth-checksum
+	fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+		write!(f, "{:?}", self.0)
+	}
+ }
+
+    impl core::fmt::Debug for AccountId20 {
+	fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+		write!(f, "{:?}", H160(self.0))
+	}
+    }
+
     impl From<[u8; 20]> for AccountId20 {
 	fn from(bytes: [u8; 20]) -> Self {
 		Self(bytes)
