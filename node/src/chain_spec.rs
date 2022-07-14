@@ -237,7 +237,8 @@ fn testnet_genesis(
         technical_committee: Default::default(),
         treasury: Default::default(),
         // author_mapping: Default::default(),
-        parachain_staking: ParachainStakingConfig {
+	parachain_staking: ParachainStakingConfig {
+            candidates: vec![
                 // Alice -> Alith
                 (
                     get_account_id_from_seed::<sr25519::Public>("Alice"),
@@ -250,6 +251,7 @@ fn testnet_genesis(
                     get_from_seed::<NimbusId>("Bob"),
                     1_000 * DIR * SUPPLY_FACTOR,
                 ),
+            ]
             .iter()
             .cloned()
             .map(|(account, _, bond)| (account, bond))
