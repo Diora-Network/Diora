@@ -137,19 +137,19 @@ pub fn local_testnet_config() -> ChainSpec {
                 // initial collators.
                 vec![
                     (
-                        AccountId::from(hex!("e782fE6487d55904244A955775da4662220Bb2AB")),
+                        H160::from(hex_literal::hex!["e782fE6487d55904244A955775da4662220Bb2AB"]),
                         get_collator_keys_from_seed("Alice"),
                     ),
                     (
-                        AccountId::from(hex!("95956cA8bcfD13C1e85F12c10ED5A8d3c3992bC1")),
+                        H160::from(hex_literal::hex!["3Cd0A705a2DC65e5b1E1205896BaA2be8A07c6e0"]),
                         get_collator_keys_from_seed("Bob"),
                     ),
                 ],
                 vec![
-                                        AccountId::from(hex!("e782fE6487d55904244A955775da4662220Bb2AB")),
-					AccountId::from(hex!("95956cA8bcfD13C1e85F12c10ED5A8d3c3992bC1")),
-					AccountId::from(hex!("49187f733d3b03cd3400e3f42383847CB8Dad033")),
-					AccountId::from(hex!("82e0CB2B2a054E41b3A62fe78155F338256D1dbB")),
+			                H160::from(hex_literal::hex!["e782fE6487d55904244A955775da4662220Bb2AB"]),
+					H160::from(hex_literal::hex!["3Cd0A705a2DC65e5b1E1205896BaA2be8A07c6e0"]),
+					H160::from(hex_literal::hex!["798d4Ba9baf0064Ec19eB4F0a1a45785ae9D6DFc"]),
+                                        H160::from(hex_literal::hex!["773539d4Ac0e786233D90A233654ccEE26a613D9"]),
                 ],
                 4000.into(),
             )
@@ -241,13 +241,13 @@ fn testnet_genesis(
             candidates: vec![
                 // Alice -> Alith
                 (
-                    AccountId::from(hex!("e782fE6487d55904244A955775da4662220Bb2AB")),
+                    H160::from(hex_literal::hex!["e782fE6487d55904244A955775da4662220Bb2AB"]),
                     get_from_seed::<NimbusId>("Alice"),
                     1_000 * DIR * SUPPLY_FACTOR,
                 ),
                 // Bob -> Baltithar
                 (
-                    AccountId::from(hex!("95956cA8bcfD13C1e85F12c10ED5A8d3c3992bC1")),
+                    H160::from(hex_literal::hex!["3Cd0A705a2DC65e5b1E1205896BaA2be8A07c6e0"]),
                     get_from_seed::<NimbusId>("Bob"),
                     1_000 * DIR * SUPPLY_FACTOR,
                 ),
