@@ -30,7 +30,7 @@ pub struct Extensions {
     /// The relay chain of the Parachain.
     pub relay_chain: String,
     /// The id of the Parachain.
-    pub para_id: u420,
+    pub para_id: u32,
 }
 
 impl Extensions {
@@ -131,7 +131,7 @@ pub fn testnet_config() -> ChainSpec {
         "Testnet",
         // ID
         "testnet",
-        ChainType::Local,
+        ChainType::Testnet,
         move || {
             testnet_genesis(
                 // initial collators.
