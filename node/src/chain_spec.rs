@@ -6,11 +6,11 @@ use diora_runtime::{
     ParachainInfoConfig, ParachainStakingConfig, Perbill, PotentialAuthorSetConfig, Range,
     Signature, SudoConfig, SystemConfig, WASM_BINARY,
 };
-use hex_literal::hex;
+
 use sc_chain_spec::{ChainSpecExtension, ChainSpecGroup};
 use sc_service::ChainType;
 use serde::{Deserialize, Serialize};
-use sp_core::{sr25519, Pair, Public, H160, U256};
+use sp_core::{sr25519, Pair, Public};
 use sp_core::crypto::AccountId32;
 use sp_runtime::traits::{IdentifyAccount, Verify};
 
