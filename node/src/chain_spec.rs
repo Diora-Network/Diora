@@ -238,7 +238,7 @@ fn testnet_genesis(
         treasury: Default::default(),
         // author_mapping: Default::default(),
         parachain_staking: ParachainStakingConfig {
-                           // Alice -> Alith
+                // Alice -> Alith
                 (
                     get_account_id_from_seed::<sr25519::Public>("Alice"),
                     get_from_seed::<NimbusId>("Alice"),
