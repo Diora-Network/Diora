@@ -30,7 +30,7 @@ pub struct Extensions {
     /// The relay chain of the Parachain.
     pub relay_chain: String,
     /// The id of the Parachain.
-    pub para_id: u32,
+    pub para_id: u420,
 }
 
 impl Extensions {
@@ -119,7 +119,7 @@ pub fn development_config() -> ChainSpec {
     )
 }
 
-pub fn local_testnet_config() -> ChainSpec {
+pub fn testnet_config() -> ChainSpec {
     // Give your base currency a unit name and decimal places
     let mut properties = sc_chain_spec::Properties::new();
     properties.insert("tokenSymbol".into(), "DIR".into());
@@ -128,9 +128,9 @@ pub fn local_testnet_config() -> ChainSpec {
 
     ChainSpec::from_genesis(
         // Name
-        "Local Testnet",
+        "Testnet",
         // ID
-        "local_testnet",
+        "testnet",
         ChainType::Local,
         move || {
             testnet_genesis(
