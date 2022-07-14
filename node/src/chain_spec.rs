@@ -131,7 +131,7 @@ pub fn testnet_config() -> ChainSpec {
         "Testnet",
         // ID
         "testnet",
-        ChainType::Testnet,
+        ChainType::testnet,
         move || {
             testnet_genesis(
                 // initial collators.
@@ -159,7 +159,7 @@ pub fn testnet_config() -> ChainSpec {
         // Telemetry
         None,
         // Protocol ID
-        None,
+        Some("diora-local"),
         // Fork ID
         None,
         // Properties
