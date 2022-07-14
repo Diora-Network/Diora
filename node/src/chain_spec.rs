@@ -12,6 +12,7 @@ use sc_service::ChainType;
 use serde::{Deserialize, Serialize};
 use sp_core::{sr25519, Pair, Public, H160, U256};
 use sp_runtime::traits::{IdentifyAccount, Verify};
+use nimbus_primitives::NimbusId;
 
 /// Specialized `ChainSpec` for the normal parachain runtime.
 pub type ChainSpec = sc_service::GenericChainSpec<GenesisConfig, Extensions>;
