@@ -238,16 +238,15 @@ fn testnet_genesis(
         treasury: Default::default(),
         // author_mapping: Default::default(),
         parachain_staking: ParachainStakingConfig {
-            candidates: vec![
-                // Alice -> Alith
+                           // Alice -> Alith
                 (
-                    H160::from(hex_literal::hex!["e782fE6487d55904244A955775da4662220Bb2AB"]),
+                    get_account_id_from_seed::<sr25519::Public>("Alice"),
                     get_from_seed::<NimbusId>("Alice"),
                     1_000 * DIR * SUPPLY_FACTOR,
                 ),
                 // Bob -> Baltithar
                 (
-                    H160::from(hex_literal::hex!["3Cd0A705a2DC65e5b1E1205896BaA2be8A07c6e0"]),
+                    get_account_id_from_seed::<sr25519::Public>("Bob"),
                     get_from_seed::<NimbusId>("Bob"),
                     1_000 * DIR * SUPPLY_FACTOR,
                 ),
