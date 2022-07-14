@@ -131,7 +131,7 @@ pub fn testnet_config() -> ChainSpec {
         "Testnet",
         // ID
         "testnet",
-        ChainType::testnet,
+        ChainType::Local,
         move || {
             testnet_genesis(
                 // initial collators.
