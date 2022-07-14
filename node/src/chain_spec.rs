@@ -12,7 +12,7 @@ use sc_service::ChainType;
 use serde::{Deserialize, Serialize};
 use sp_core::{sr25519, Pair, Public, H160, U256};
 use sp_runtime::traits::{IdentifyAccount, Verify};
-use nimbus_primitives::NimbusId;
+
 
 /// Specialized `ChainSpec` for the normal parachain runtime.
 pub type ChainSpec = sc_service::GenericChainSpec<GenesisConfig, Extensions>;
@@ -198,19 +198,19 @@ pub fn testnet_config() -> ChainSpec {
                 // initial collators.
                 vec![
                     (
-                        AccountId32::from(hex_literal::hex!["e782fE6487d55904244A955775da4662220Bb2AB"]),
+                        AccountId::from(hex_literal::hex!["e782fE6487d55904244A955775da4662220Bb2AB"]),
                         get_collator_keys_from_seed("Alice"),
                     ),
                     (
-                        AccountId32::from(hex_literal::hex!["3Cd0A705a2DC65e5b1E1205896BaA2be8A07c6e0"]),
+                        AccountId::from(hex_literal::hex!["3Cd0A705a2DC65e5b1E1205896BaA2be8A07c6e0"]),
                         get_collator_keys_from_seed("Bob"),
                     ),
                 ],
                 vec![
-			                AccountId32::from(hex_literal::hex!["e782fE6487d55904244A955775da4662220Bb2AB"]),
-					AccountId32::from(hex_literal::hex!["3Cd0A705a2DC65e5b1E1205896BaA2be8A07c6e0"]),
-					AccountId32::from(hex_literal::hex!["798d4Ba9baf0064Ec19eB4F0a1a45785ae9D6DFc"]),
-                                        AccountId32::from(hex_literal::hex!["773539d4Ac0e786233D90A233654ccEE26a613D9"]),
+			                AccountId::from(hex_literal::hex!["e782fE6487d55904244A955775da4662220Bb2AB"]),
+					AccountId::from(hex_literal::hex!["3Cd0A705a2DC65e5b1E1205896BaA2be8A07c6e0"]),
+					AccountId::from(hex_literal::hex!["798d4Ba9baf0064Ec19eB4F0a1a45785ae9D6DFc"]),
+                                        AccountId::from(hex_literal::hex!["773539d4Ac0e786233D90A233654ccEE26a613D9"]),
                 ],
                 4000.into(),
             )
