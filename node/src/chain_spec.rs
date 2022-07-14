@@ -250,7 +250,6 @@ fn testnet_genesis(
                     get_from_seed::<NimbusId>("Bob"),
                     1_000 * DIR * SUPPLY_FACTOR,
                 ),
-            ]
             .iter()
             .cloned()
             .map(|(account, _, bond)| (account, bond))
