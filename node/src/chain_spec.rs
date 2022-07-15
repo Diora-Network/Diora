@@ -6,11 +6,14 @@ use diora_runtime::{
     ParachainInfoConfig, ParachainStakingConfig, Perbill, PotentialAuthorSetConfig, Range,
     Signature, SudoConfig, SystemConfig, WASM_BINARY,
 };
+
 use sc_chain_spec::{ChainSpecExtension, ChainSpecGroup};
 use sc_service::ChainType;
 use serde::{Deserialize, Serialize};
 use sp_core::{sr25519, Pair, Public};
+use sp_core::crypto::AccountId32;
 use sp_runtime::traits::{IdentifyAccount, Verify};
+
 
 /// Specialized `ChainSpec` for the normal parachain runtime.
 pub type ChainSpec = sc_service::GenericChainSpec<GenesisConfig, Extensions>;
@@ -117,7 +120,6 @@ pub fn development_config() -> ChainSpec {
         },
     )
 }
-
 pub fn local_testnet_config() -> ChainSpec {
     // Give your base currency a unit name and decimal places
     let mut properties = sc_chain_spec::Properties::new();
@@ -175,6 +177,56 @@ pub fn local_testnet_config() -> ChainSpec {
         Extensions {
             relay_chain: "rococo".into(), // You MUST set this to the correct network!
             para_id: 2000,
+        },
+    )
+}
+
+pub fn testnet_config() -> ChainSpec {
+    // Give your base currency a unit name and decimal places
+    let mut properties = sc_chain_spec::Properties::new();
+    properties.insert("tokenSymbol".into(), "DIR".into());
+    properties.insert("tokenDecimals".into(), 18.into());
+    properties.insert("ss58Format".into(), 42.into());
+
+    ChainSpec::from_genesis(
+        // Name
+        "Testnet",
+        // ID
+        "testnet",
+        ChainType::Local,
+        move || {
+            testnet_genesis(
+                // initial collators.
+                vec![
+                    (
+                        AccountId32::from(hex_literal::hex!["aea48c27a7f703a7f8acedf15b43e8fcbad0b7846e5fe32a0b2b75cb81d75306"]),
+                        get_collator_keys_from_seed("Alice"),
+                    ),
+                    (
+                        AccountId32::from(hex_literal::hex!["aea48c27a7f703a7f8acedf15b43e8fcbad0b7846e5fe32a0b2b75cb81d75306"]),
+                        get_collator_keys_from_seed("Bob"),
+                    ),
+                ],
+                vec![
+		        AccountId32::from(hex_literal::hex!["aea48c27a7f703a7f8acedf15b43e8fcbad0b7846e5fe32a0b2b75cb81d75306"]),
+                ],
+                4000.into(),
+            )
+        },
+        // Bootnodes
+        vec![],
+        // Telemetry
+        None,
+        // Protocol ID
+        Some("diora-local"),
+        // Fork ID
+        None,
+        // Properties
+        Some(properties),
+        // Extensions
+        Extensions {
+            relay_chain: "rococo".into(), // You MUST set this to the correct network!
+            para_id: 4000,
         },
     )
 }
@@ -244,7 +296,7 @@ fn testnet_genesis(
         technical_committee: Default::default(),
         treasury: Default::default(),
         // author_mapping: Default::default(),
-        parachain_staking: ParachainStakingConfig {
+	parachain_staking: ParachainStakingConfig {
             candidates: vec![
                 // Alice -> Alith
                 (

@@ -20,6 +20,7 @@ pub mod pallet {
     #[cfg(feature = "std")]
     use log::warn;
     use nimbus_primitives::{AccountLookup, CanAuthor, NimbusId};
+    use sp_core::H160;
     use sp_std::vec::Vec;
 
     /// The Account Set pallet
@@ -60,6 +61,36 @@ pub mod pallet {
             Self { mapping: vec![] }
         }
     }
+   
+    pub struct AccountId20(pub [u8; 20]);
+
+    #[cfg(feature = "std")]
+    impl std::fmt::Display for AccountId20 {
+	//TODO This is a pretty quck-n-dirty implementation. Perhaps we should add
+	// checksum casing here? I bet there is a crate for that.
+	// Maybe this one https://github.com/miguelmota/rust-eth-checksum
+	fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+		write!(f, "{:?}", self.0)
+	}
+ }
+
+    impl core::fmt::Debug for AccountId20 {
+	fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+		write!(f, "{:?}", H160(self.0))
+	}
+    }
+
+    impl From<[u8; 20]> for AccountId20 {
+	fn from(bytes: [u8; 20]) -> Self {
+		Self(bytes)
+	}
+    }
+
+    impl Into<[u8; 20]> for AccountId20 {
+	fn into(self) -> [u8; 20] {
+		self.0
+	}
+    }
 
     #[pallet::genesis_build]
     impl<T: Config> GenesisBuild<T> for GenesisConfig<T> {
@@ -77,6 +108,13 @@ pub mod pallet {
     /// This pallet is compatible with nimbus's author filtering system. Any account stored in this pallet
     /// is a valid author. Notice that this implementation does not have an inner filter, so it
     /// can only be the beginning of the nimbus filter pipeline.
+    
+    pub struct EthereumSigner([u8; 20]);
+    impl From<[u8; 20]> for EthereumSigner {
+	fn from(x: [u8; 20]) -> Self {
+		EthereumSigner(x)
+	}
+}
     impl<T: Config> CanAuthor<T::AccountId> for Pallet<T> {
         fn can_author(author: &T::AccountId, _slot: &u32) -> bool {
             StoredAccounts::<T>::get().contains(author)
