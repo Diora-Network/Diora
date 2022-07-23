@@ -40,7 +40,6 @@
 
 
 
-<!-- ABOUT THE PROJECT -->
 ## About The Project
 
 https://user-images.githubusercontent.com/49777543/168764160-121147ce-78c3-4e77-a020-5e03df8e6e06.mp4
