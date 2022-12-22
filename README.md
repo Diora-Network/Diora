@@ -143,7 +143,7 @@ Distributed under the MIT License. See `LICENSE` for more information.
 <!-- CONTACT -->
 ## 📫 Contact
 
-Diora Network - [@DioraNetwork](https://twitter.com/dioranetwork) - support@diora.network
+Diora Network - [@DioraNetwork](https://twitter.com/dioranetwork) - contact@diora.network
 
 Project Link: [https://github.com/diora-network/diora](https://github.com/diora-network/diora)
 
