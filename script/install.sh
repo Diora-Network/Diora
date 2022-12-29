@@ -61,7 +61,8 @@ fi # new
 rustup default stable
 rustup update nightly
 rustup target add wasm32-unknown-unknown --toolchain nightly
+apt-get install make
 echo "Installing Diora node"
-git clone https://github.com/diora-network/diora && cd diora/ && sh script/init.sh && cargo build --release
+sh script/init.sh && cargo build --release
 
 echo "Done <3"
