@@ -18,7 +18,7 @@ newBalance='
     ],
     [
       "5DtB6JvRdkzaCnozxs2x7qcqzJjut3WpXgEx7o6peqjwuPhA",
-      10000000000000000000000
+      1000000000000000000000
     ],
     [
       "5DAAnrj7VHTznn2AWBemMuyBwZWs6FNFjdyVXUeYum3PTXFy",
