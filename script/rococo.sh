@@ -99,21 +99,3 @@ newParas="{\"paras\":[
 echo $newParas > ./config/newParas.json
 
 ################################################################################parachain
-
-
-
-# Generate Relay ChainSpec
-echo "build relay chainspec"
-./polkadot build-spec --chain rococo --disable-default-bootnode |
-jq 'setpath(["name"]; "Diora Rococo Testnet")' |
-jq --argjson version "${chainSpecVersion}" 'setpath(["id"]; $version.id)' |
-jq --argjson replace2 "${newBalance}" 'setpath(["genesis","runtime","runtime_genesis_config","balances","balances"]; $replace2.balances)' |
-jq --argjson replace3 "${newSudo}" 'setpath(["genesis","runtime","runtime_genesis_config","sudo","key"]; $replace3.sudo)' |
-jq --slurpfile newParas ./config/newParas.json 'setpath(["genesis","runtime","runtime_genesis_config","paras","paras"]; $newParas[0].paras)' |
-jq 'setpath(["genesis","runtime","session_length_in_blocks"];10)' |
-sed 's/1e+21/10000000000000000/g' |
-sed 's/1e+24/10000000000000000000000/g'  > ./config/rococo.json
-
-
-echo "build relay raw chainspec"
-./polkadot build-spec --chain ./config/rococo.json --disable-default-bootnode --raw > ./config/rococo-raw.json
