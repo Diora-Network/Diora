@@ -60,7 +60,6 @@ fi # new
 
 apt-get install make pkg-config libssl-dev
 rustup default 1.59.0
-rustup update nightly
 rustup target add wasm32-unknown-unknown --toolchain nightly
 echo "Installing Diora node"
 cd .. && cargo build --release
