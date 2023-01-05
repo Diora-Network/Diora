@@ -55,12 +55,14 @@ if ! which rustup >/dev/null 2>&1; then
 	curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 	source ~/.cargo/env
 else:
-	rustup update
+	rustup update nightly
 fi # new
 
-apt-get install make pkg-config libssl-dev
-rustup default 1.59.0
+rustup update nightly
 rustup target add wasm32-unknown-unknown --toolchain nightly
+rustup default 1.59.0
+rustup show
+
 echo "Installing Diora node"
 cd .. && cargo build --release
 
