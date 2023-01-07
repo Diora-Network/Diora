@@ -1,36 +1,35 @@
-# Note: This is currently designed to simplify development
-# To get a smaller docker image, there should be 2 images generated, in 2 stages.
+FROM ubuntu:20.04
 
-FROM rustlang/rust:nightly
+# Install the dependencies
+RUN apt update && apt install -y git clang curl libssl-dev llvm libudev-dev
 
+# Install Rust
+RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 
-ARG PROFILE=release
-WORKDIR /frontier
+# Set the environment variables
+ENV PATH="/root/.cargo/bin:${PATH}"
 
-# Upcd dates core parts
-RUN apt-get update -y && \
-	apt-get install -y cmake pkg-config libssl-dev git gcc build-essential clang libclang-dev
+# Add the wasm32 target
+RUN rustup target add wasm32-unknown-unknown --toolchain nightly
 
-# Install rust wasm. Needed for substrate wasm engine
-RUN rustup target add wasm32-unknown-unknown
+# Set the default toolchain to 1.59.0
+RUN rustup default 1.59.0
 
-# Download Frontier repo
-RUN git clone https://github.com/paritytech/frontier /frontier
-RUN cd /frontier && git submodule init && git submodule update
+# Show the installed toolchains
+RUN rustup show
 
-# Download rust dependencies and build the rust binary
-RUN cargo build "--$PROFILE"
+# Clone the Diora repository
+RUN git clone https://github.com/Diora-Network/Diora.git
 
-# 30333 for p2p traffic
-# 9933 for RPC call
-# 9944 for Websocket
+# Build the Diora node
+RUN cd Diora && cargo build --release
+
 # 9615 for Prometheus (metrics)
 EXPOSE 30333 9933 9944 9615
 
+# Set the working directory
+WORKDIR /Diora
 
-ENV PROFILE ${PROFILE}
+# Run the Diora node
+CMD ["cargo", "run", "--release"]
 
-# The execution will re-compile the project to run it
-# This allows to modify the code and not have to re-compile the
-# dependencies.
-CMD cargo run --bin frontier-template-node "--$PROFILE" -- --dev
