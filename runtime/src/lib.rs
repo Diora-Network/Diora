@@ -16,7 +16,7 @@ use sp_runtime::{
     ApplyExtrinsicResult, MultiSignature, Percent,
 };
 
-pub use nimbus_primitives::NimbusId;
+pub use nimbus_primitives::{CanAuthor, NimbusId};
 pub use pallet_author_slot_filter::EligibilityValue;
 pub use parachain_staking::{inflation, InflationInfo, Range};
 use sp_std::prelude::*;
@@ -27,8 +27,7 @@ use sp_version::RuntimeVersion;
 use frame_support::{
     construct_runtime, match_types, parameter_types,
     traits::{
-        ConstBool, ConstU128, ConstU32, EnsureOneOf, EqualPrivilegeOnly, Everything, OnInitialize,
-        OnUnbalanced,
+        ConstBool, ConstU128, ConstU32, EnsureOneOf, EqualPrivilegeOnly, Everything, OnUnbalanced,
     },
     weights::{
         constants::{RocksDbWeight, WEIGHT_PER_SECOND},
@@ -78,8 +77,13 @@ use pallet_evm::{
 };
 use sp_core::{H160, H256, U256};
 use sp_runtime::traits::{DispatchInfoOf, Dispatchable, PostDispatchInfoOf};
+
 mod precompiles;
 pub use precompiles::DioraPrecompiles;
+
+pub use session_keys_primitives::*;
+
+pub use nimbus_primitives::AccountLookup;
 
 /// Alias to 512-bit hash when used in the context of a transaction signature on the chain.
 pub type Signature = MultiSignature;
@@ -252,6 +256,7 @@ impl_opaque_keys! {
         //TODO this was called author_inherent in the old runtime.
         // Can I just rename it like this?
         pub nimbus: AuthorInherent,
+        pub vrf: session_keys_primitives::VrfSessionKey,
     }
 }
 
@@ -401,6 +406,7 @@ parameter_types! {
 impl pallet_transaction_payment::Config for Runtime {
     type OnChargeTransaction =
         pallet_transaction_payment::CurrencyAdapter<Balances, DealWithFees<Runtime>>;
+    // type OnChargeTransaction = pallet_transaction_payment::CurrencyAdapter<Balances, ()>;
     type WeightToFee = constants::fee::WeightToFee;
     type LengthToFee = ConstantMultiplier<Balance, TransactionByteFee>;
     type FeeMultiplierUpdate = SlowAdjustingFeeUpdate<Self>;
@@ -724,8 +730,8 @@ impl cumulus_pallet_dmp_queue::Config for Runtime {
 }
 
 impl pallet_author_inherent::Config for Runtime {
-    type AccountLookup = PotentialAuthorSet;
-    type EventHandler = ();
+    type AccountLookup = AuthorMapping;
+    type EventHandler = ParachainStaking;
     type CanAuthor = AuthorFilter;
     // We start a new slot each time we see a new relay block.
     type SlotBeacon = cumulus_pallet_parachain_system::RelaychainBlockNumberProvider<Self>;
@@ -741,13 +747,13 @@ impl pallet_author_slot_filter::Config for Runtime {
 
 // This is a simple session key manager. It should probably either work with, or be replaced
 // entirely by pallet sessions
-// impl pallet_author_mapping::Config for Runtime {
-// 	type Event = Event;
-// 	type DepositCurrency = Balances;
-// 	type DepositAmount = ConstU128<{ 100 * 1000000000000000000}>;
-// 	type Keys = session_keys_primitives::VrfId;
-// 	type WeightInfo = pallet_author_mapping::weights::SubstrateWeight<Runtime>;
-// }
+impl pallet_author_mapping::Config for Runtime {
+    type Event = Event;
+    type DepositCurrency = Balances;
+    type DepositAmount = ConstU128<{ 100 * 1000000000000000000 }>;
+    type Keys = VrfId;
+    type WeightInfo = pallet_author_mapping::weights::SubstrateWeight<Runtime>;
+}
 
 parameter_types! {
     /// Default fixed percent a collator takes off the top of due rewards
@@ -873,6 +879,7 @@ impl pallet_evm::Config for Runtime {
     type PrecompilesValue = PrecompilesValue;
     type ChainId = EthereumChainId;
     type OnChargeTransaction = pallet_evm::EVMCurrencyAdapter<Balances, DealWithFees<Runtime>>;
+    // type OnChargeTransaction = pallet_evm::EVMCurrencyAdapter<Balances, ()>;
     type BlockGasLimit = BlockGasLimit;
     type FindAuthor = ();
 }
@@ -1010,7 +1017,7 @@ construct_runtime!(
         AuthorFilter: pallet_author_slot_filter::{Pallet, Storage, Event, Config} = 22,
         PotentialAuthorSet: pallet_account_set::{Pallet, Storage, Config<T>} = 23,
         DappsStaking: pallet_dapps_staking::{Pallet, Call, Storage, Event<T>} = 24,
-        // AuthorMapping: pallet_author_mapping::{Pallet, Call, Config<T>, Storage, Event<T>} = 23,
+        AuthorMapping: pallet_author_mapping::{Pallet, Call, Config<T>, Storage, Event<T>} = 25,
 
         // XCM helpers.
         XcmpQueue: cumulus_pallet_xcmp_queue::{Pallet, Call, Storage, Event<T>} = 30,
@@ -1282,25 +1289,55 @@ impl_runtime_apis! {
     }
 
     impl nimbus_primitives::NimbusApi<Block> for Runtime {
-        fn can_author(author: NimbusId, slot: u32, parent_header: &<Block as BlockT>::Header) -> bool {
-            // This runtime uses an entropy source that is updated during block initialization
-            // Therefore we need to initialize it to match the state it will be in when the
-            // next block is being executed.
-            System::reset_events();
-            System::initialize(&(parent_header.number + 1), &parent_header.hash(), &parent_header.digest);
-            <Self as pallet_author_slot_filter::Config>::RandomnessSource::on_initialize(System::block_number());
+                fn can_author(
+                    author: nimbus_primitives::NimbusId,
+                    slot: u32,
+                    parent_header: &<Block as BlockT>::Header
+                ) -> bool {
+                    let block_number = parent_header.number + 1;
 
-            // And now the actual prediction call
-            <AuthorInherent as nimbus_primitives::CanAuthor<_>>::can_author(&author, &slot)
-        }
-    }
+                    // The Moonbeam runtimes use an entropy source that needs to do some accounting
+                    // work during block initialization. Therefore we initialize it here to match
+                    // the state it will be in when the next block is being executed.
+                    use frame_support::traits::OnInitialize;
+                    System::initialize(
+                        &block_number,
+                        &parent_header.hash(),
+                        &parent_header.digest,
+                    );
+                    RandomnessCollectiveFlip::on_initialize(block_number);
 
-    // We also implement the olf AuthorFilterAPI to meet the trait bounds on the client side.
-    impl nimbus_primitives::AuthorFilterAPI<Block, NimbusId> for Runtime {
-        fn can_author(_: NimbusId, _: u32, _: &<Block as BlockT>::Header) -> bool {
-            panic!("AuthorFilterAPI is no longer supported. Please update your client.")
-        }
-    }
+                    // Because the staking solution calculates the next staking set at the beginning
+                    // of the first block in the new round, the only way to accurately predict the
+                    // authors is to compute the selection during prediction.
+                    use nimbus_primitives::AccountLookup;
+                    if parachain_staking::Pallet::<Self>::round().should_update(block_number) {
+                        let author_account_id = if let Some(account) =
+                            AuthorMapping::lookup_account(&author) {
+                            account
+                        } else {
+                            // return false if author mapping not registered like in can_author impl
+                            return false
+                        };
+                        // predict eligibility post-selection by computing selection results now
+                        let (eligible, _) =
+                            pallet_author_slot_filter::compute_pseudo_random_subset::<Self>(
+                                parachain_staking::Pallet::<Self>::compute_top_candidates(),
+                                &slot
+                            );
+                        eligible.contains(&author_account_id)
+                    } else {
+                        AuthorInherent::can_author(&author, &slot)
+                    }
+                }
+            }
+
+            // We also implement the old AuthorFilterAPI to meet the trait bounds on the client side.
+            impl nimbus_primitives::AuthorFilterAPI<Block, NimbusId> for Runtime {
+                fn can_author(_: NimbusId, _: u32, _: &<Block as BlockT>::Header) -> bool {
+                    panic!("AuthorFilterAPI is no longer supported. Please update your client.")
+                }
+            }
 
     #[cfg(feature = "runtime-benchmarks")]
     impl frame_benchmarking::Benchmark<Block> for Runtime {

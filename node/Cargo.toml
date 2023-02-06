@@ -25,15 +25,16 @@ log = "0.4.14"
 serde = { version = "1.0.119", features = [ "derive" ] }
 flume = "0.10.9"
 maplit = "1.0.2"
+syn = { version = "=1.0.95" }
 
 # RPC related Dependencies
 jsonrpsee = { version = "0.13.0", features = ["server", "macros"] }
 
 # Local Dependencies
-nimbus-consensus = { git = "https://github.com/PureStake/nimbus", branch = "polkadot-v0.9.23" }
+nimbus-consensus = { git = "https://github.com/purestake/nimbus", branch = "polkadot-v0.9.23" }
 # TODO we should be able to depend only on the primitives crate once we move the inherent data provider there.
-nimbus-primitives = { git = "https://github.com/PureStake/nimbus", branch = "polkadot-v0.9.23" }
-pallet-author-inherent = { git = "https://github.com/PureStake/nimbus", branch = "polkadot-v0.9.23" }
+nimbus-primitives = { git = "https://github.com/purestake/nimbus", branch = "polkadot-v0.9.23"}
+pallet-author-inherent = { git = "https://github.com/purestake/nimbus", branch = "polkadot-v0.9.23" }
 
 diora-runtime = { path = "../runtime" }
 

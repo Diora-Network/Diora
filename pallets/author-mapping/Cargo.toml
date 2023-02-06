@@ -1,12 +1,12 @@
 [package]
-name = "parachain-staking"
+name = "pallet-author-mapping"
 authors = [ "PureStake" ]
-description = "parachain staking pallet for collator selection and reward distribution"
+description = "Maps AuthorIds to AccountIds Useful for associating consensus authors with in-runtime accounts"
 edition = "2021"
-version = "3.0.0"
+version = "2.0.5"
 
 [dependencies]
-log = "0.4"
+log = { version = "0.4", default-features = false }
 serde = { version = "1.0.101", optional = true }
 
 # Substrate
@@ -17,14 +17,13 @@ parity-scale-codec = { version = "3.0.0", default-features = false, features = [
 scale-info = { version = "2.0", default-features = false, features = [ "derive" ] }
 sp-runtime = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.23", default-features = false }
 sp-std = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.23", default-features = false }
-substrate-fixed = { git = "https://github.com/encointer/substrate-fixed", default-features = false }
 
 # Nimbus
 nimbus-primitives = { git = "https://github.com/purestake/nimbus", branch = "polkadot-v0.9.23", default-features = false }
 
-[dev-dependencies]
-similar-asserts = "1.1.0"
+session-keys-primitives = { path = "../../primitives/session-keys", default-features = false }
 
+[dev-dependencies]
 pallet-balances = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.23" }
 sp-core = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.23" }
 sp-io = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.23" }
@@ -35,10 +34,12 @@ std = [
 	"frame-benchmarking/std",
 	"frame-support/std",
 	"frame-system/std",
+	"log/std",
 	"nimbus-primitives/std",
 	"parity-scale-codec/std",
 	"scale-info/std",
 	"serde",
+	"session-keys-primitives/std",
 	"sp-runtime/std",
 	"sp-std/std",
 ]

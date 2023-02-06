@@ -1,19 +1,19 @@
 use cumulus_primitives_core::ParaId;
 use diora_runtime::{
     constants::currency::{DIR, SUPPLY_FACTOR},
-    AccountId, AuthorFilterConfig, Balance, BalancesConfig, BaseFeeConfig, DefaultBaseFeePerGas,
-    EligibilityValue, EthereumChainIdConfig, GenesisConfig, InflationInfo, NimbusId,
-    ParachainInfoConfig, ParachainStakingConfig, Perbill, PotentialAuthorSetConfig, Range,
-    Signature, SudoConfig, SystemConfig, WASM_BINARY,
+    AccountId, AuthorFilterConfig, AuthorMappingConfig, Balance, BalancesConfig, BaseFeeConfig,
+    DefaultBaseFeePerGas, EligibilityValue, EthereumChainIdConfig, GenesisConfig, InflationInfo,
+    NimbusId, ParachainInfoConfig, ParachainStakingConfig, Perbill, PotentialAuthorSetConfig,
+    Range, Signature, SudoConfig, SystemConfig, WASM_BINARY,
 };
+use hex_literal::hex;
 
 use sc_chain_spec::{ChainSpecExtension, ChainSpecGroup};
 use sc_service::ChainType;
 use serde::{Deserialize, Serialize};
+use sp_core::crypto::UncheckedInto;
 use sp_core::{sr25519, Pair, Public};
-use sp_core::crypto::AccountId32;
 use sp_runtime::traits::{IdentifyAccount, Verify};
-
 
 /// Specialized `ChainSpec` for the normal parachain runtime.
 pub type ChainSpec = sc_service::GenericChainSpec<GenesisConfig, Extensions>;
@@ -44,13 +44,6 @@ impl Extensions {
 
 type AccountPublic = <Signature as Verify>::Signer;
 
-/// Generate collator keys from seed.
-///
-/// This function's return type must always match the session keys of the chain in tuple format.
-pub fn get_collator_keys_from_seed(seed: &str) -> NimbusId {
-    get_pair_from_seed::<NimbusId>(seed)
-}
-
 /// Helper function to generate an account ID from seed
 pub fn get_account_id_from_seed<TPublic: Public>(seed: &str) -> AccountId
 where
@@ -66,7 +59,7 @@ pub fn get_from_seed<TPublic: Public>(seed: &str) -> <TPublic::Pair as Pair>::Pu
         .public()
 }
 
-pub fn development_config() -> ChainSpec {
+pub fn diora_local_config() -> ChainSpec {
     // Give your base currency a unit name and decimal places
     let mut properties = sc_chain_spec::Properties::new();
     properties.insert("tokenSymbol".into(), "DIR".into());
@@ -75,21 +68,23 @@ pub fn development_config() -> ChainSpec {
 
     ChainSpec::from_genesis(
         // Name
-        "Development",
+        "Diora Local Testnet",
         // ID
-        "dev",
-        ChainType::Development,
+        "diora_local_testnet",
+        ChainType::Local,
         move || {
-            testnet_genesis(
+            diora_genesis(
                 // initial collators.
                 vec![
                     (
                         get_account_id_from_seed::<sr25519::Public>("Alice"),
-                        get_collator_keys_from_seed("Alice"),
+                        get_from_seed::<NimbusId>("Alice"),
+                        1_000 * DIR * SUPPLY_FACTOR,
                     ),
                     (
                         get_account_id_from_seed::<sr25519::Public>("Bob"),
-                        get_collator_keys_from_seed("Bob"),
+                        get_from_seed::<NimbusId>("Bob"),
+                        1_000 * DIR * SUPPLY_FACTOR,
                     ),
                 ],
                 vec![
@@ -106,111 +101,7 @@ pub fn development_config() -> ChainSpec {
                     get_account_id_from_seed::<sr25519::Public>("Eve//stash"),
                     get_account_id_from_seed::<sr25519::Public>("Ferdie//stash"),
                 ],
-                2000.into(),
-            )
-        },
-        vec![],
-        None,
-        None,
-        None,
-        Some(properties),
-        Extensions {
-            relay_chain: "rococo".into(), // You MUST set this to the correct network!
-            para_id: 2000,
-        },
-    )
-}
-pub fn local_testnet_config() -> ChainSpec {
-    // Give your base currency a unit name and decimal places
-    let mut properties = sc_chain_spec::Properties::new();
-    properties.insert("tokenSymbol".into(), "DIR".into());
-    properties.insert("tokenDecimals".into(), 18.into());
-    properties.insert("ss58Format".into(), 42.into());
-
-    ChainSpec::from_genesis(
-        // Name
-        "Local Testnet",
-        // ID
-        "local_testnet",
-        ChainType::Local,
-        move || {
-            testnet_genesis(
-                // initial collators.
-                vec![
-                    (
-                        get_account_id_from_seed::<sr25519::Public>("Alice"),
-                        get_collator_keys_from_seed("Alice"),
-                    ),
-                    (
-                        get_account_id_from_seed::<sr25519::Public>("Bob"),
-                        get_collator_keys_from_seed("Bob"),
-                    ),
-                ],
-                vec![
-                    get_account_id_from_seed::<sr25519::Public>("Alice"),
-                    get_account_id_from_seed::<sr25519::Public>("Bob"),
-                    get_account_id_from_seed::<sr25519::Public>("Charlie"),
-                    get_account_id_from_seed::<sr25519::Public>("Dave"),
-                    get_account_id_from_seed::<sr25519::Public>("Eve"),
-                    get_account_id_from_seed::<sr25519::Public>("Ferdie"),
-                    get_account_id_from_seed::<sr25519::Public>("Alice//stash"),
-                    get_account_id_from_seed::<sr25519::Public>("Bob//stash"),
-                    get_account_id_from_seed::<sr25519::Public>("Charlie//stash"),
-                    get_account_id_from_seed::<sr25519::Public>("Dave//stash"),
-                    get_account_id_from_seed::<sr25519::Public>("Eve//stash"),
-                    get_account_id_from_seed::<sr25519::Public>("Ferdie//stash"),
-                ],
-                2000.into(),
-            )
-        },
-        // Bootnodes
-        vec![],
-        // Telemetry
-        None,
-        // Protocol ID
-        Some("template-local"),
-        // Fork ID
-        None,
-        // Properties
-        Some(properties),
-        // Extensions
-        Extensions {
-            relay_chain: "rococo".into(), // You MUST set this to the correct network!
-            para_id: 2000,
-        },
-    )
-}
-
-pub fn testnet_config() -> ChainSpec {
-    // Give your base currency a unit name and decimal places
-    let mut properties = sc_chain_spec::Properties::new();
-    properties.insert("tokenSymbol".into(), "DIR".into());
-    properties.insert("tokenDecimals".into(), 18.into());
-    properties.insert("ss58Format".into(), 42.into());
-
-    ChainSpec::from_genesis(
-        // Name
-        "Testnet",
-        // ID
-        "testnet",
-        ChainType::Local,
-        move || {
-            testnet_genesis(
-                // initial collators.
-                vec![
-                    (
-                        AccountId32::from(hex_literal::hex!["aea48c27a7f703a7f8acedf15b43e8fcbad0b7846e5fe32a0b2b75cb81d75306"]),
-                        get_collator_keys_from_seed("Alice"),
-                    ),
-                    (
-                        AccountId32::from(hex_literal::hex!["aea48c27a7f703a7f8acedf15b43e8fcbad0b7846e5fe32a0b2b75cb81d75306"]),
-                        get_collator_keys_from_seed("Bob"),
-                    ),
-                ],
-                vec![
-		        AccountId32::from(hex_literal::hex!["aea48c27a7f703a7f8acedf15b43e8fcbad0b7846e5fe32a0b2b75cb81d75306"]),
-                ],
-                4000.into(),
+                4202.into(),
             )
         },
         // Bootnodes
@@ -226,7 +117,53 @@ pub fn testnet_config() -> ChainSpec {
         // Extensions
         Extensions {
             relay_chain: "rococo".into(), // You MUST set this to the correct network!
-            para_id: 4000,
+            para_id: 4202,
+        },
+    )
+}
+
+pub fn diora_rococo_config() -> ChainSpec {
+    // Give your base currency a unit name and decimal places
+    let mut properties = sc_chain_spec::Properties::new();
+    properties.insert("tokenSymbol".into(), "DIR".into());
+    properties.insert("tokenDecimals".into(), 18.into());
+    properties.insert("ss58Format".into(), 42.into());
+
+    ChainSpec::from_genesis(
+        // Name
+        "Diora rococo",
+        // ID
+        "Diora rococo",
+        ChainType::Live,
+        move || {
+            diora_genesis(
+                // initial collators.
+                vec![(
+                    hex!["aea48c27a7f703a7f8acedf15b43e8fcbad0b7846e5fe32a0b2b75cb81d75306"].into(),
+                    hex!["aea48c27a7f703a7f8acedf15b43e8fcbad0b7846e5fe32a0b2b75cb81d75306"]
+                        .unchecked_into(),
+                    1_000 * DIR * SUPPLY_FACTOR,
+                )],
+                vec![
+                    hex!["aea48c27a7f703a7f8acedf15b43e8fcbad0b7846e5fe32a0b2b75cb81d75306"].into(),
+                ],
+                4202.into(),
+            )
+        },
+        // Bootnodes
+        vec![],
+        // Telemetry
+        None,
+        // Protocol ID
+        Some("diora-rococo"),
+        // Fork ID
+        None,
+        // Properties
+        Some(properties),
+        // Extensions
+        Extensions {
+            relay_chain: "rococo".into(), // You MUST set this to the correct network!
+            para_id: 4202,
         },
     )
 }
@@ -253,8 +190,9 @@ pub fn diora_inflation_config() -> InflationInfo<Balance> {
         round,
     }
 }
-fn testnet_genesis(
-    authorities: Vec<(AccountId, NimbusId)>,
+
+fn diora_genesis(
+    candidates: Vec<(AccountId, NimbusId, Balance)>,
     endowed_accounts: Vec<AccountId>,
     id: ParaId,
 ) -> GenesisConfig {
@@ -276,12 +214,6 @@ fn testnet_genesis(
                 .collect(),
         },
         parachain_info: ParachainInfoConfig { parachain_id: id },
-        author_filter: AuthorFilterConfig {
-            eligible_count: EligibilityValue::default(),
-        },
-        potential_author_set: PotentialAuthorSetConfig {
-            mapping: authorities,
-        },
         parachain_system: Default::default(),
         ethereum_chain_id: EthereumChainIdConfig { chain_id: 201u64 },
         evm: Default::default(),
@@ -295,28 +227,31 @@ fn testnet_genesis(
         democracy: Default::default(),
         technical_committee: Default::default(),
         treasury: Default::default(),
-        // author_mapping: Default::default(),
-	parachain_staking: ParachainStakingConfig {
-            candidates: vec![
-                // Alice -> Alith
-                (
-                    get_account_id_from_seed::<sr25519::Public>("Alice"),
-                    get_from_seed::<NimbusId>("Alice"),
-                    1_000 * DIR * SUPPLY_FACTOR,
-                ),
-                // Bob -> Baltithar
-                (
-                    get_account_id_from_seed::<sr25519::Public>("Bob"),
-                    get_from_seed::<NimbusId>("Bob"),
-                    1_000 * DIR * SUPPLY_FACTOR,
-                ),
-            ]
-            .iter()
-            .cloned()
-            .map(|(account, _, bond)| (account, bond))
-            .collect(),
+        parachain_staking: ParachainStakingConfig {
+            candidates: candidates
+                .iter()
+                .cloned()
+                .map(|(account, _, bond)| (account, bond))
+                .collect(),
             delegations: vec![],
             inflation_config: diora_inflation_config(),
+        },
+        author_mapping: AuthorMappingConfig {
+            mappings: candidates
+                .iter()
+                .cloned()
+                .map(|(account_id, author_id, _)| (author_id, account_id))
+                .collect(),
+        },
+        author_filter: AuthorFilterConfig {
+            eligible_count: EligibilityValue::default(),
+        },
+        potential_author_set: PotentialAuthorSetConfig {
+            mapping: candidates
+                .iter()
+                .cloned()
+                .map(|(account_id, author_id, _)| (account_id, author_id))
+                .collect(),
         },
     }
 }

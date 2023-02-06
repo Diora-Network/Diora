@@ -18,12 +18,10 @@ use sp_core::hexdisplay::HexDisplay;
 use sp_runtime::traits::{AccountIdConversion, Block as BlockT};
 use std::{io::Write, net::SocketAddr};
 
-fn load_spec(id: &str) -> std::result::Result<Box<dyn sc_service::ChainSpec>, String> {
+fn load_spec(id: &str) -> std::result::Result<Box<dyn ChainSpec>, String> {
     Ok(match id {
-        "rococo" => Box::new(chain_spec::development_config()),
-	"diora-rococo" => Box::new(chain_spec::testnet_config()),
-        "template-rococo" => Box::new(chain_spec::local_testnet_config()),
-        "" | "local" => Box::new(chain_spec::local_testnet_config()),
+        "diora_rococo" => Box::new(chain_spec::diora_rococo_config()),
+        "" | "diora_local" => Box::new(chain_spec::diora_local_config()),
         path => Box::new(chain_spec::ChainSpec::from_json_file(
             std::path::PathBuf::from(path),
         )?),

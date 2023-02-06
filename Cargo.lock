@@ -37,7 +37,7 @@ dependencies = [
  "log",
  "maplit",
  "nimbus-consensus",
- "nimbus-primitives 0.9.0 (git+https://github.com/PureStake/nimbus?branch=polkadot-v0.9.23)",
+ "nimbus-primitives",
  "pallet-author-inherent",
  "pallet-ethereum",
  "pallet-transaction-payment-rpc",
@@ -78,6 +78,7 @@ dependencies = [
  "substrate-build-script-utils",
  "substrate-frame-rpc-system",
  "substrate-prometheus-endpoint",
+ "syn",
 ]
 
 [[package]]
@@ -376,9 +377,9 @@ checksum = "30696a84d817107fc028e049980e09d5e140e8da8f1caeb17e8e950658a3cea9"
 
 [[package]]
 name = "async-trait"
-version = "0.1.56"
+version = "0.1.53"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "96cf8829f67d2eab0b2dfa42c5d0ef737e0724e4a82b01b3e292456202b19716"
+checksum = "ed6aa3524a2dfcf9fe180c51eae2b58738348d819517ceadf95789c51fff7600"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -1888,8 +1889,9 @@ dependencies = [
  "frame-system-benchmarking",
  "frame-system-rpc-runtime-api",
  "log",
- "nimbus-primitives 0.9.0 (git+https://github.com/PureStake/nimbus?branch=polkadot-v0.9.23)",
+ "nimbus-primitives",
  "pallet-author-inherent",
+ "pallet-author-mapping",
  "pallet-author-slot-filter",
  "pallet-balances",
  "pallet-base-fee",
@@ -1908,7 +1910,6 @@ dependencies = [
  "pallet-evm-precompile-simple",
  "pallet-randomness-collective-flip",
  "pallet-scheduler",
- "pallet-session",
  "pallet-sudo",
  "pallet-template",
  "pallet-timestamp",
@@ -1924,6 +1925,7 @@ dependencies = [
  "polkadot-runtime-common",
  "scale-info",
  "serde",
+ "session-keys-primitives",
  "smallvec",
  "sp-api",
  "sp-block-builder",
@@ -5020,7 +5022,7 @@ dependencies = [
 [[package]]
 name = "nimbus-consensus"
 version = "0.9.0"
-source = "git+https://github.com/PureStake/nimbus?branch=polkadot-v0.9.23#2acb2a1d09af475780eed1963f82a111bdcbd4ef"
+source = "git+https://github.com/purestake/nimbus?branch=polkadot-v0.9.23#2acb2a1d09af475780eed1963f82a111bdcbd4ef"
 dependencies = [
  "async-trait",
  "cumulus-client-consensus-common",
@@ -5028,7 +5030,7 @@ dependencies = [
  "cumulus-primitives-parachain-inherent",
  "futures 0.3.21",
  "log",
- "nimbus-primitives 0.9.0 (git+https://github.com/PureStake/nimbus?branch=polkadot-v0.9.23)",
+ "nimbus-primitives",
  "parity-scale-codec",
  "parking_lot 0.12.1",
  "polkadot-client",
@@ -5051,24 +5053,7 @@ dependencies = [
 [[package]]
 name = "nimbus-primitives"
 version = "0.9.0"
-source = "git+https://github.com/purestake/nimbus?branch=moonbeam-polkadot-v0.9.23#d553864f7f970de6b5a291b90910e89e2d2b7524"
-dependencies = [
- "async-trait",
- "frame-support",
- "frame-system",
- "parity-scale-codec",
- "scale-info",
- "sp-api",
- "sp-application-crypto",
- "sp-inherents",
- "sp-runtime",
- "sp-std",
-]
-
-[[package]]
-name = "nimbus-primitives"
-version = "0.9.0"
-source = "git+https://github.com/PureStake/nimbus?branch=polkadot-v0.9.23#2acb2a1d09af475780eed1963f82a111bdcbd4ef"
+source = "git+https://github.com/purestake/nimbus?branch=polkadot-v0.9.23#2acb2a1d09af475780eed1963f82a111bdcbd4ef"
 dependencies = [
  "async-trait",
  "frame-support",
@@ -5356,13 +5341,13 @@ dependencies = [
 [[package]]
 name = "pallet-author-inherent"
 version = "0.9.0"
-source = "git+https://github.com/PureStake/nimbus?branch=polkadot-v0.9.23#2acb2a1d09af475780eed1963f82a111bdcbd4ef"
+source = "git+https://github.com/purestake/nimbus?branch=polkadot-v0.9.23#2acb2a1d09af475780eed1963f82a111bdcbd4ef"
 dependencies = [
  "frame-benchmarking",
  "frame-support",
  "frame-system",
  "log",
- "nimbus-primitives 0.9.0 (git+https://github.com/PureStake/nimbus?branch=polkadot-v0.9.23)",
+ "nimbus-primitives",
  "parity-scale-codec",
  "scale-info",
  "sp-api",
@@ -5374,15 +5359,35 @@ dependencies = [
 ]
 
 [[package]]
-name = "pallet-author-slot-filter"
-version = "0.9.0"
-source = "git+https://github.com/PureStake/nimbus?branch=polkadot-v0.9.23#2acb2a1d09af475780eed1963f82a111bdcbd4ef"
+name = "pallet-author-mapping"
+version = "2.0.5"
 dependencies = [
  "frame-benchmarking",
  "frame-support",
  "frame-system",
  "log",
- "nimbus-primitives 0.9.0 (git+https://github.com/PureStake/nimbus?branch=polkadot-v0.9.23)",
+ "nimbus-primitives",
+ "pallet-balances",
+ "parity-scale-codec",
+ "scale-info",
+ "serde",
+ "session-keys-primitives",
+ "sp-core",
+ "sp-io",
+ "sp-runtime",
+ "sp-std",
+]
+
+[[package]]
+name = "pallet-author-slot-filter"
+version = "0.9.0"
+source = "git+https://github.com/purestake/nimbus?branch=polkadot-v0.9.23#2acb2a1d09af475780eed1963f82a111bdcbd4ef"
+dependencies = [
+ "frame-benchmarking",
+ "frame-support",
+ "frame-system",
+ "log",
+ "nimbus-primitives",
  "parity-scale-codec",
  "scale-info",
  "serde",
@@ -6341,7 +6346,7 @@ dependencies = [
  "frame-support",
  "frame-system",
  "log",
- "nimbus-primitives 0.9.0 (git+https://github.com/purestake/nimbus?branch=moonbeam-polkadot-v0.9.23)",
+ "nimbus-primitives",
  "pallet-balances",
  "parity-scale-codec",
  "scale-info",
@@ -9892,6 +9897,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "session-keys-primitives"
+version = "0.1.0"
+dependencies = [
+ "nimbus-primitives",
+ "parity-scale-codec",
+ "scale-info",
+ "sp-application-crypto",
+ "sp-runtime",
+]
+
+[[package]]
 name = "sha-1"
 version = "0.8.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -11126,9 +11142,9 @@ checksum = "6bdef32e8150c2a081110b42772ffe7d7c9032b606bc226c8260fd97e0976601"
 
 [[package]]
 name = "syn"
-version = "1.0.96"
+version = "1.0.95"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0748dd251e24453cb8717f0354206b91557e4ec8703673a4b30208f2abaf1ebf"
+checksum = "fbaf6116ab8924f39d52792136fb74fd60a80194cf1b1c6ffa6453eef1c3f942"
 dependencies = [
  "proc-macro2",
  "quote",

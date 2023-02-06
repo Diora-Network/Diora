@@ -47,7 +47,6 @@ frame-system-rpc-runtime-api = { git = "https://github.com/paritytech/substrate"
 ## Substrate Pallet Dependencies
 pallet-balances = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.23", default-features = false }
 pallet-randomness-collective-flip = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.23", default-features = false }
-pallet-session = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.23", default-features = false }
 pallet-timestamp = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.23", default-features = false }
 pallet-transaction-payment = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.23", default-features = false }
 pallet-transaction-payment-rpc-runtime-api = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.23", default-features = false }
@@ -67,10 +66,12 @@ pallet-collator-selection = { git = "https://github.com/paritytech/cumulus", bra
 parachain-info = { git = "https://github.com/paritytech/cumulus", branch = "polkadot-v0.9.23", default-features = false }
 
 # Nimbus Dependencies
-nimbus-primitives = { git = "https://github.com/PureStake/nimbus", branch = "polkadot-v0.9.23", default-features = false }
-pallet-author-inherent = { git = "https://github.com/PureStake/nimbus", branch = "polkadot-v0.9.23", default-features = false }
-pallet-author-slot-filter = { git = "https://github.com/PureStake/nimbus", branch = "polkadot-v0.9.23", default-features = false }
+nimbus-primitives = { git = "https://github.com/purestake/nimbus", branch = "polkadot-v0.9.23", default-features = false }
+pallet-author-inherent = { git = "https://github.com/purestake/nimbus", branch = "polkadot-v0.9.23", default-features = false }
+pallet-author-slot-filter = { git = "https://github.com/purestake/nimbus", branch = "polkadot-v0.9.23", default-features = false }
+pallet-author-mapping = { path = "../pallets/author-mapping", default-features = false }
 pallet-ethereum-chain-id = { path = "../pallets/ethereum-chain-id", default-features = false }
+session-keys-primitives = { path = "../primitives/session-keys", default-features = false }
 
 # Frontier Dependencies
 fp-rpc = { git = "https://github.com/Diora-Network/frontier", branch = "polkadot-v0.9.23", default-features = false }
@@ -126,7 +127,6 @@ std = [
 	"pallet-balances/std",
 	"pallet-collator-selection/std",
 	"pallet-randomness-collective-flip/std",
-	"pallet-session/std",
 	"pallet-sudo/std",
 	"pallet-scheduler/std",
 	"pallet-utility/std",
@@ -163,6 +163,8 @@ std = [
 	"pallet-collective/std",
 	"pallet-democracy/std",
 	"pallet-treasury/std",
+	"session-keys-primitives/std",
+	"pallet-author-mapping/std",
 ]
 
 runtime-benchmarks = [
