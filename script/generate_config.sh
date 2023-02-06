@@ -87,7 +87,7 @@ echo "build diora chainspec"
 
 newParas="{\"paras\":[
         [
-            2000,
+            4202,
             {
                 \"genesis_head\": \"`cat ./config/diora_local.genesis`\",
                 \"validation_code\":\"`cat ./config/diora_local.wasm`\",
