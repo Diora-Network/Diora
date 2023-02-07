@@ -79,12 +79,12 @@ pub fn diora_local_config() -> ChainSpec {
                     (
                         get_account_id_from_seed::<sr25519::Public>("Alice"),
                         get_from_seed::<NimbusId>("Alice"),
-                        1_000 * DIR * SUPPLY_FACTOR,
+                        250 * DIR * SUPPLY_FACTOR,
                     ),
                     (
                         get_account_id_from_seed::<sr25519::Public>("Bob"),
                         get_from_seed::<NimbusId>("Bob"),
-                        1_000 * DIR * SUPPLY_FACTOR,
+                        250 * DIR * SUPPLY_FACTOR,
                     ),
                 ],
                 vec![
@@ -142,7 +142,7 @@ pub fn diora_rococo_config() -> ChainSpec {
                     hex!["aea48c27a7f703a7f8acedf15b43e8fcbad0b7846e5fe32a0b2b75cb81d75306"].into(),
                     hex!["aea48c27a7f703a7f8acedf15b43e8fcbad0b7846e5fe32a0b2b75cb81d75306"]
                         .unchecked_into(),
-                    1_000 * DIR * SUPPLY_FACTOR,
+                    250 * DIR * SUPPLY_FACTOR,
                 )],
                 vec![
                     hex!["aea48c27a7f703a7f8acedf15b43e8fcbad0b7846e5fe32a0b2b75cb81d75306"].into(),
@@ -210,7 +210,7 @@ fn diora_genesis(
             balances: endowed_accounts
                 .iter()
                 .cloned()
-                .map(|k| (k, 500_000 * DIR))
+                .map(|k| (k, 50_000000 * DIR))
                 .collect(),
         },
         parachain_info: ParachainInfoConfig { parachain_id: id },
