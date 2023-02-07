@@ -62,7 +62,7 @@ pub fn get_from_seed<TPublic: Public>(seed: &str) -> <TPublic::Pair as Pair>::Pu
 pub fn diora_local_config() -> ChainSpec {
     // Give your base currency a unit name and decimal places
     let mut properties = sc_chain_spec::Properties::new();
-    properties.insert("tokenSymbol".into(), "DIR".into());
+    properties.insert("tokenSymbol".into(), "DIOR".into());
     properties.insert("tokenDecimals".into(), 18.into());
     properties.insert("ss58Format".into(), 42.into());
 
@@ -125,7 +125,7 @@ pub fn diora_local_config() -> ChainSpec {
 pub fn diora_rococo_config() -> ChainSpec {
     // Give your base currency a unit name and decimal places
     let mut properties = sc_chain_spec::Properties::new();
-    properties.insert("tokenSymbol".into(), "DIR".into());
+    properties.insert("tokenSymbol".into(), "DIOR".into());
     properties.insert("tokenDecimals".into(), 18.into());
     properties.insert("ss58Format".into(), 42.into());
 
@@ -210,7 +210,7 @@ fn diora_genesis(
             balances: endowed_accounts
                 .iter()
                 .cloned()
-                .map(|k| (k, 50_000000 * DIR))
+                .map(|k| (k, 50_00000 * DIR))
                 .collect(),
         },
         parachain_info: ParachainInfoConfig { parachain_id: id },
