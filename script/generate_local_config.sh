@@ -80,17 +80,17 @@ mkdir data
 
 echo "build diora chainspec"
 
-./diora build-spec --disable-default-bootnode --chain diora_rococo >  ./config/diora_rococo.json
-./diora export-genesis-state --chain ./config/diora_rococo.json > ./config/diora_rococo.genesis
-./diora export-genesis-wasm --chain ./config/diora_rococo.json > ./config/diora_rococo.wasm
+./diora build-spec --disable-default-bootnode --chain diora_local >  ./config/diora_local.json
+./diora export-genesis-state --chain ./config/diora_local.json > ./config/diora_local.genesis
+./diora export-genesis-wasm --chain ./config/diora_local.json > ./config/diora_local.wasm
 
 
 newParas="{\"paras\":[
         [
             4202,
             {
-                \"genesis_head\": \"`cat ./config/diora_rococo.genesis`\",
-                \"validation_code\":\"`cat ./config/diora_rococo.wasm`\",
+                \"genesis_head\": \"`cat ./config/diora_local.genesis`\",
+                \"validation_code\":\"`cat ./config/diora_local.wasm`\",
                 \"parachain\":true
             }
         ]
