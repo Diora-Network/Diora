@@ -260,6 +260,7 @@ pub fn run() -> Result<()> {
                 }),
             }
         }
+        Some(Subcommand::Key(cmd)) => cmd.run(&cli),
         Some(Subcommand::RunInstantSeal(run_cmd)) => {
             let runner = cli.create_runner(run_cmd)?;
             runner.run_node_until_exit(|config| async move {

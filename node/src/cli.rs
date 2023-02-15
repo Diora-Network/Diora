@@ -1,5 +1,6 @@
 use crate::chain_spec;
 use clap::Parser;
+use sc_cli::KeySubcommand;
 use std::path::PathBuf;
 
 /// Sub-commands supported by the collator.
@@ -41,6 +42,10 @@ pub enum Subcommand {
     /// The pallet benchmarking moved to the `pallet` sub-command.
     #[clap(subcommand)]
     Benchmark(frame_benchmarking_cli::BenchmarkCmd),
+
+    /// Key management cli utilities
+    #[clap(subcommand)]
+    Key(KeySubcommand),
 }
 
 /// Command for exporting the genesis state of the parachain

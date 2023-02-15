@@ -3,8 +3,8 @@ use diora_runtime::{
     constants::currency::{DIR, SUPPLY_FACTOR},
     AccountId, AuthorFilterConfig, AuthorMappingConfig, Balance, BalancesConfig, BaseFeeConfig,
     DefaultBaseFeePerGas, EligibilityValue, EthereumChainIdConfig, GenesisConfig, InflationInfo,
-    NimbusId, ParachainInfoConfig, ParachainStakingConfig, Perbill, PotentialAuthorSetConfig,
-    Range, Signature, SudoConfig, SystemConfig, WASM_BINARY,
+    NimbusId, ParachainInfoConfig, ParachainStakingConfig, Perbill, Range, Signature, SudoConfig,
+    SystemConfig, WASM_BINARY,
 };
 use hex_literal::hex;
 
@@ -138,14 +138,33 @@ pub fn diora_rococo_config() -> ChainSpec {
         move || {
             diora_genesis(
                 // initial collators.
-                vec![(
-                    hex!["aea48c27a7f703a7f8acedf15b43e8fcbad0b7846e5fe32a0b2b75cb81d75306"].into(),
-                    hex!["aea48c27a7f703a7f8acedf15b43e8fcbad0b7846e5fe32a0b2b75cb81d75306"]
-                        .unchecked_into(),
-                    250 * DIR * SUPPLY_FACTOR,
-                )],
                 vec![
-                    hex!["aea48c27a7f703a7f8acedf15b43e8fcbad0b7846e5fe32a0b2b75cb81d75306"].into(),
+                    (
+                        hex!["5ccd918cbf5e1d876641b5967b943a659e7a0ef415ca677ec457160a21a4ad7e"]
+                            .into(),
+                        hex!["5ccd918cbf5e1d876641b5967b943a659e7a0ef415ca677ec457160a21a4ad7e"]
+                            .unchecked_into(),
+                        250 * DIR * SUPPLY_FACTOR,
+                    ),
+                    (
+                        hex!["72d5cd6efc6c3338a03b86834c6dbc81e0878742a8039e52270d586945698b5f"]
+                            .into(),
+                        hex!["72d5cd6efc6c3338a03b86834c6dbc81e0878742a8039e52270d586945698b5f"]
+                            .unchecked_into(),
+                        250 * DIR * SUPPLY_FACTOR,
+                    ),
+                    (
+                        hex!["96d0d050dda960781a621678e34e69c5012f37ff9fcd6e1b8e6aed19a6a3402e"]
+                            .into(),
+                        hex!["96d0d050dda960781a621678e34e69c5012f37ff9fcd6e1b8e6aed19a6a3402e"]
+                            .unchecked_into(),
+                        250 * DIR * SUPPLY_FACTOR,
+                    ),
+                ],
+                vec![
+                    hex!["5ccd918cbf5e1d876641b5967b943a659e7a0ef415ca677ec457160a21a4ad7e"].into(),
+                    hex!["72d5cd6efc6c3338a03b86834c6dbc81e0878742a8039e52270d586945698b5f"].into(),
+                    hex!["96d0d050dda960781a621678e34e69c5012f37ff9fcd6e1b8e6aed19a6a3402e"].into(),
                 ],
                 4202.into(),
             )
@@ -245,13 +264,6 @@ fn diora_genesis(
         },
         author_filter: AuthorFilterConfig {
             eligible_count: EligibilityValue::default(),
-        },
-        potential_author_set: PotentialAuthorSetConfig {
-            mapping: candidates
-                .iter()
-                .cloned()
-                .map(|(account_id, author_id, _)| (account_id, author_id))
-                .collect(),
         },
     }
 }
