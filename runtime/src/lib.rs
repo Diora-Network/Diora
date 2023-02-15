@@ -59,8 +59,6 @@ use xcm_builder::{
 };
 use xcm_executor::{Config, XcmExecutor};
 
-mod pallet_account_set;
-
 /// Import the template pallet.
 pub use pallet_template;
 
@@ -793,19 +791,17 @@ impl parachain_staking::Config for Runtime {
     type DefaultCollatorCommission = DefaultCollatorCommission;
     type DefaultParachainBondReservePercent = DefaultParachainBondReservePercent;
     /// Minimum stake required to become a collator
-    type MinCollatorStk = ConstU128<{ 1000 * DIR * SUPPLY_FACTOR }>;
+    type MinCollatorStk = ConstU128<{ 250 * DIR * SUPPLY_FACTOR }>;
     /// Minimum stake required to be reserved to be a candidate
-    type MinCandidateStk = ConstU128<{ 1000 * DIR * SUPPLY_FACTOR }>;
+    type MinCandidateStk = ConstU128<{ 250 * DIR * SUPPLY_FACTOR }>;
     /// Minimum stake required to be reserved to be a delegator
-    type MinDelegation = ConstU128<{ 500 * MILLIDIR * SUPPLY_FACTOR }>;
+    type MinDelegation = ConstU128<{ 125 * MILLIDIR * SUPPLY_FACTOR }>;
     /// Minimum stake required to be reserved to be a delegator
-    type MinDelegatorStk = ConstU128<{ 500 * MILLIDIR * SUPPLY_FACTOR }>;
+    type MinDelegatorStk = ConstU128<{ 125 * MILLIDIR * SUPPLY_FACTOR }>;
     type OnCollatorPayout = ();
     type OnNewRound = ();
     type WeightInfo = parachain_staking::weights::SubstrateWeight<Runtime>;
 }
-
-impl pallet_account_set::Config for Runtime {}
 
 /// Configure the pallet template in pallets/template.
 impl pallet_template::Config for Runtime {
@@ -1015,7 +1011,7 @@ construct_runtime!(
         ParachainStaking: parachain_staking::{Pallet, Call, Storage, Event<T>, Config<T>} = 20,
         AuthorInherent: pallet_author_inherent::{Pallet, Call, Storage, Inherent} = 21,
         AuthorFilter: pallet_author_slot_filter::{Pallet, Storage, Event, Config} = 22,
-        PotentialAuthorSet: pallet_account_set::{Pallet, Storage, Config<T>} = 23,
+        // PotentialAuthorSet: pallet_account_set::{Pallet, Storage, Config<T>} = 23,
         DappsStaking: pallet_dapps_staking::{Pallet, Call, Storage, Event<T>} = 24,
         AuthorMapping: pallet_author_mapping::{Pallet, Call, Config<T>, Storage, Event<T>} = 25,
 
