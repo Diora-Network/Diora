@@ -162,9 +162,14 @@ pub fn diora_rococo_config() -> ChainSpec {
                     ),
                 ],
                 vec![
+                    // Candidates
                     hex!["5ccd918cbf5e1d876641b5967b943a659e7a0ef415ca677ec457160a21a4ad7e"].into(),
                     hex!["72d5cd6efc6c3338a03b86834c6dbc81e0878742a8039e52270d586945698b5f"].into(),
                     hex!["96d0d050dda960781a621678e34e69c5012f37ff9fcd6e1b8e6aed19a6a3402e"].into(),
+                    // Faucet 5STim9aZszaS1GSj7QHniMBZb4qbCVJNXTnHZmSfiEgw9XB7
+                    hex!["7cd8f5644cdb7d1e70ba38587f968b61be9eb69198037b7359bc545e2231d9cd"].into(),
+                    // Developer
+                    hex!["aea48c27a7f703a7f8acedf15b43e8fcbad0b7846e5fe32a0b2b75cb81d75306"].into(),
                 ],
                 4202.into(),
             )
@@ -224,6 +229,7 @@ fn diora_genesis(
         sudo: SudoConfig {
             // Assign network admin rights.
             key: Some(
+                // 5G1h51S53gWS4ARhRjgNAW1jQcvX4gY2GP8G7DaBh6RmVsQC
                 hex!["5ccd918cbf5e1d876641b5967b943a659e7a0ef415ca677ec457160a21a4ad7e"].into(),
             ),
         },
