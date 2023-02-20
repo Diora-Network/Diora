@@ -223,7 +223,9 @@ fn diora_genesis(
         },
         sudo: SudoConfig {
             // Assign network admin rights.
-            key: Some(get_account_id_from_seed::<sr25519::Public>("Alice")),
+            key: Some(
+                hex!["5ccd918cbf5e1d876641b5967b943a659e7a0ef415ca677ec457160a21a4ad7e"].into(),
+            ),
         },
         balances: BalancesConfig {
             balances: endowed_accounts
