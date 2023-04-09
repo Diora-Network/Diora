@@ -5,7 +5,7 @@ my_os=$(uname -a)
 
 # Ubuntu:
 if echo "$my_os" | fgrep -q Ubuntu 2>/dev/null ; then
-	apt update && apt install -y git clang curl libssl-dev llvm libudev-dev
+	sudo apt update && sudo apt install -y git clang curl libssl-dev llvm libudev-dev
 # Debian:
 elif echo "$my_os" | fgrep -q Debian 2>/dev/null; then
 	echo "Debian Detected"
