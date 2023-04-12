@@ -79,7 +79,7 @@ Launch a local setup including a Relay Chain and a Parachain
 ```
 # Compile Polkadot
 git clone https://github.com/paritytech/polkadot
-git checkout release-v0.9.20
+git checkout release-v0.9.23
 cargo build --release
 
 # Compile Diora
