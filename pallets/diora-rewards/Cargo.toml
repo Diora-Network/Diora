@@ -1,0 +1,55 @@
+[package]
+name = "pallet-diora-rewards"
+version = "0.2.1"
+authors = ["Diora Developers <https://github.com/Diora-Network>"]
+description = "diora's reward pallet for the contributors."
+edition = "2021"
+
+[package.metadata.docs.rs]
+targets = ["x86_64-unknown-linux-gnu"]
+
+[dependencies]
+codec = { package = "parity-scale-codec", version = "3.0.0", default-features = false, features = ["derive"] }
+scale-info = { version = "2.1", default-features = false, features = ["derive"] }
+log = {default-features = false, version ="0.4.17"}
+hex-literal = "0.3.1"
+
+frame-support = { default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.38"}
+frame-system = { default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.38" }
+frame-benchmarking = { default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.38", optional = true }
+pallet-balances = { default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.38" }
+sp-runtime = { default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.38" }
+sp-core = { default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.38" }
+sp-io = { default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.38" }
+sp-std = { default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.38" }
+
+# cumulus
+cumulus-primitives-core = { git = "https://github.com/paritytech/cumulus", branch = "polkadot-v0.9.38", default-features = false, optional = true}
+cumulus-pallet-parachain-system = { git = "https://github.com/paritytech/cumulus", branch = "polkadot-v0.9.38", default-features = false, optional = true }
+cumulus-primitives-parachain-inherent = { git = "https://github.com/paritytech/cumulus", branch = "polkadot-v0.9.38", default-features = false, optional = true }
+
+[dev-dependencies]
+cumulus-test-relay-sproof-builder = { git = "https://github.com/paritytech/cumulus", branch = "polkadot-v0.9.38" }
+
+[features]
+default = ["std"]
+std = [
+	"codec/std",
+	"scale-info/std",
+	"frame-support/std",
+	"frame-system/std",
+	"frame-benchmarking/std",
+	"pallet-balances/std",
+	"cumulus-pallet-parachain-system/std",
+    "cumulus-primitives-core/std",
+    "cumulus-primitives-parachain-inherent/std",
+	"sp-std/std",
+	"sp-runtime/std",
+]
+runtime-benchmarks = [
+	"frame-benchmarking",
+	"cumulus-primitives-core",
+    "cumulus-pallet-parachain-system",
+    "cumulus-primitives-parachain-inherent",
+]
+try-runtime = ["frame-support/try-runtime"]
