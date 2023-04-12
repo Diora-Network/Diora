@@ -1,7 +1,7 @@
 #!/bin/bash
 # relaychain
 
-nohup script/polkadot --alice -d script/data/node1 --chain script/config/rococo-local-raw.json --validator  --ws-port 9955 --rpc-port 10025 --port 30033  --rpc-cors all  -lapproval_voting=trace,sync=debug,staking=trace,babe=trace --pruning archive  > script/data/log.alice 2>&1 &
+nohup script/polkadot --alice -d script/data/node1 --chain script/config/rococo-local-raw.json --validator  --ws-port 9944 --rpc-port 9933 --port 30033  --rpc-cors all  -lapproval_voting=trace,sync=debug,staking=trace,babe=trace --pruning archive  > script/data/log.alice 2>&1 &
 nohup script/polkadot --bob   -d script/data/node2 --chain script/config/rococo-local-raw.json --validator  --ws-port 9966 --rpc-port 10026 --port 30034  --rpc-cors all -lapproval_voting=trace > script/data/log.bob 2>&1 &
 nohup script/polkadot --charlie -d script/data/node3 --chain script/config/rococo-local-raw.json --validator  --ws-port 9977 --rpc-port 10027 --port 30035  --rpc-cors all -lapproval_voting=trace > script/data/log.charlie 2>&1 &
 
