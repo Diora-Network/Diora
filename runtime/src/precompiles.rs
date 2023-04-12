@@ -1,3 +1,21 @@
+// This file is part of Diora.
+
+// Copyright (C) 2019-2022 Diora-Network.
+// SPDX-License-Identifier: GPL-3.0-or-later WITH Classpath-exception-2.0
+
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+// GNU General Public License for more details.
+
+// You should have received a copy of the GNU General Public License
+// along with this program. If not, see <https://www.gnu.org/licenses/>.
+
 use pallet_evm::{Precompile, PrecompileHandle, PrecompileResult, PrecompileSet};
 use sp_core::H160;
 use sp_std::marker::PhantomData;
@@ -10,42 +28,39 @@ pub struct DioraPrecompiles<R>(PhantomData<R>);
 
 impl<R> DioraPrecompiles<R>
 where
-    R: pallet_evm::Config,
+	R: pallet_evm::Config,
 {
-    pub fn new() -> Self {
-        Self(Default::default())
-    }
-    pub fn used_addresses() -> sp_std::vec::Vec<H160> {
-        sp_std::vec![1, 2, 3, 4, 5, 1024, 1025]
-            .into_iter()
-            .map(hash)
-            .collect()
-    }
+	pub fn new() -> Self {
+		Self(Default::default())
+	}
+	pub fn used_addresses() -> sp_std::vec::Vec<H160> {
+		sp_std::vec![1, 2, 3, 4, 5, 1024, 1025].into_iter().map(hash).collect()
+	}
 }
 impl<R> PrecompileSet for DioraPrecompiles<R>
 where
-    R: pallet_evm::Config,
+	R: pallet_evm::Config,
 {
-    fn execute(&self, handle: &mut impl PrecompileHandle) -> Option<PrecompileResult> {
-        match handle.code_address() {
-            // Ethereum precompiles :
-            a if a == hash(1) => Some(ECRecover::execute(handle)),
-            a if a == hash(2) => Some(Sha256::execute(handle)),
-            a if a == hash(3) => Some(Ripemd160::execute(handle)),
-            a if a == hash(4) => Some(Identity::execute(handle)),
-            a if a == hash(5) => Some(Modexp::execute(handle)),
-            // Non-Frontier specific nor Ethereum precompiles :
-            a if a == hash(1024) => Some(Sha3FIPS256::execute(handle)),
-            a if a == hash(1025) => Some(ECRecoverPublicKey::execute(handle)),
-            _ => None,
-        }
-    }
+	fn execute(&self, handle: &mut impl PrecompileHandle) -> Option<PrecompileResult> {
+		match handle.code_address() {
+			// Ethereum precompiles :
+			a if a == hash(1) => Some(ECRecover::execute(handle)),
+			a if a == hash(2) => Some(Sha256::execute(handle)),
+			a if a == hash(3) => Some(Ripemd160::execute(handle)),
+			a if a == hash(4) => Some(Identity::execute(handle)),
+			a if a == hash(5) => Some(Modexp::execute(handle)),
+			// Non-Frontier specific nor Ethereum precompiles :
+			a if a == hash(1024) => Some(Sha3FIPS256::execute(handle)),
+			a if a == hash(1025) => Some(ECRecoverPublicKey::execute(handle)),
+			_ => None,
+		}
+	}
 
-    fn is_precompile(&self, address: H160) -> bool {
-        Self::used_addresses().contains(&address)
-    }
+	fn is_precompile(&self, address: H160) -> bool {
+		Self::used_addresses().contains(&address)
+	}
 }
 
 fn hash(a: u64) -> H160 {
-    H160::from_low_u64_be(a)
+	H160::from_low_u64_be(a)
 }

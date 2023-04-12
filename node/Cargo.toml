@@ -1,13 +1,9 @@
 [package]
-name = "Diora"
-authors = [ "Anonymous" ]
+name = "diora-node"
+authors = [ "Diora Developer" ]
 build = "build.rs"
-description = "A Substrate node using the Nimbus consensus framework with instant seal and as a parachain."
 edition = "2021"
-homepage = "https://diora.network"
-license = "Unlicense"
-repository = "https://diora.network/"
-version = "0.9.0"
+version = "0.9.38"
 
 [package.metadata.docs.rs]
 targets = [ "x86_64-unknown-linux-gnu" ]
@@ -18,23 +14,22 @@ path = "src/main.rs"
 
 [dependencies]
 codec = { package = "parity-scale-codec", version = "3.0.0" }
-clap = { version = "3.0", features = [ "derive" ] }
+clap = { version = "4.1.4", features = [ "derive" ] }
 derive_more = "0.99.2"
 hex-literal = "0.3.1"
 log = "0.4.14"
 serde = { version = "1.0.119", features = [ "derive" ] }
 flume = "0.10.9"
 maplit = "1.0.2"
-syn = { version = "=1.0.95" }
 
 # RPC related Dependencies
-jsonrpsee = { version = "0.13.0", features = ["server", "macros"] }
+jsonrpsee = { version = "0.16.2", features = ["server", "macros"] }
 
 # Local Dependencies
-nimbus-consensus = { git = "https://github.com/purestake/nimbus", branch = "master-polkadot-v0.9.38" }
+nimbus-consensus = { git = "https://github.com/Diora-Network/nimbus", branch = "polkadot-v0.9.38" }
 # TODO we should be able to depend only on the primitives crate once we move the inherent data provider there.
-nimbus-primitives = { git = "https://github.com/purestake/nimbus", branch = "master-polkadot-v0.9.38"}
-pallet-author-inherent = { git = "https://github.com/purestake/nimbus", branch = "master-polkadot-v0.9.38" }
+nimbus-primitives = { git = "https://github.com/Diora-Network/nimbus", branch = "polkadot-v0.9.38"}
+pallet-author-inherent = { git = "https://github.com/Diora-Network/nimbus", branch = "polkadot-v0.9.38" }
 
 diora-runtime = { path = "../runtime" }
 
@@ -52,6 +47,7 @@ sc-basic-authorship = { git = "https://github.com/paritytech/substrate", branch 
 sc-chain-spec = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.38" }
 sc-cli = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.38" }
 sc-client-api = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.38" }
+sc-client-db = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.38" }
 sc-consensus = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.38" }
 sc-consensus-manual-seal = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.38" }
 sc-executor = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.38" }
@@ -59,7 +55,8 @@ sc-keystore = { git = "https://github.com/paritytech/substrate", branch = "polka
 sc-network = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.38" }
 sc-rpc = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.38" }
 sc-rpc-api = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.38" }
-sc-service = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.38", features = [ "wasmtime" ] }
+sc-service = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.38" }
+sc-sysinfo = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.38" }
 sc-telemetry = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.38" }
 sc-tracing = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.38" }
 sc-transaction-pool = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.38" }
