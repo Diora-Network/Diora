@@ -77,33 +77,38 @@ Launch a local setup including a Relay Chain and a Parachain
 
 * polkadot & diora
 ```
-# Compile Polkadot
+# 1. Compile Polkadot
 git clone https://github.com/paritytech/polkadot
-git checkout release-v0.9.23
+git checkout release-v0.9.38
 cargo build --release
 
-# Compile Diora
+# 2. Compile Diora
 https://github.com/Diora-Network/Diora
 cargo build --release
+
+# 3. Copy polkadot binary to Diora/script 
 ```
-By shell 
+By make command 
 
 ```
-cd script
-bash ./build.sh
-bash ./start-all.sh
-# log
-tail -f data/log.2022
+# Start diora local
+# After the relay chain produces 10 blocks, the parachain starts producing blocks
+make start-diora chain=diora_local
 
-# stop-all and remove data
-bash ./stop-all.sh
+# Restart diora local
+make restart-diora chain=diora_local
+
+# Stop diora local
+make stop-chain
+
+# Stop chain and remove chain data
+make remove-chain
 ```
-After the relay chain produces 10 blocks, the parachain starts producing blocks
+
 
 # Launch the multi-chain
 ```
 polkdot-launch ./diora/polkadot-launch/config.json
-
 ```
 
 <!-- USAGE EXAMPLES -->
