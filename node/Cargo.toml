@@ -19,6 +19,7 @@ derive_more = "0.99.2"
 hex-literal = "0.3.1"
 log = "0.4.14"
 serde = { version = "1.0.119", features = [ "derive" ] }
+serde_json = "1.0.91"
 flume = "0.10.9"
 maplit = "1.0.2"
 
@@ -107,6 +108,7 @@ fc-rpc = { git = "https://github.com/Diora-Network/frontier", branch = "polkadot
 fc-mapping-sync = { git = "https://github.com/Diora-Network/frontier", branch = "polkadot-v0.9.38" }
 fc-db = { git = "https://github.com/Diora-Network/frontier", branch = "polkadot-v0.9.38" }
 pallet-ethereum = { git="https://github.com/Diora-Network/frontier", branch = "polkadot-v0.9.38" }
+pallet-evm = { git="https://github.com/Diora-Network/frontier", branch = "polkadot-v0.9.38" }
 
 [build-dependencies]
 substrate-build-script-utils = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.38" }

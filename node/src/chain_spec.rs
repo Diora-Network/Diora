@@ -25,13 +25,15 @@ use diora_runtime::{
 	WASM_BINARY,
 };
 use hex_literal::hex;
+use pallet_evm::{AddressMapping, HashedAddressMapping};
+use std::str::FromStr;
 
 use sc_chain_spec::{ChainSpecExtension, ChainSpecGroup};
 use sc_service::ChainType;
 use serde::{Deserialize, Serialize};
-use sp_core::{crypto::UncheckedInto, sr25519, Pair, Public};
+use sp_core::{crypto::UncheckedInto, sr25519, Pair, Public, H160};
 use sp_runtime::{
-	traits::{IdentifyAccount, Verify},
+	traits::{BlakeTwo256, IdentifyAccount, Verify},
 	Percent,
 };
 
@@ -43,6 +45,13 @@ pub fn get_pair_from_seed<TPublic: Public>(seed: &str) -> <TPublic::Pair as Pair
 	TPublic::Pair::from_string(&format!("//{}", seed), None)
 		.expect("static values are valid; qed")
 		.public()
+}
+
+/// Helper function to generate a account from address
+pub fn get_account_id_from_evm_address(address: &str) -> AccountId {
+	HashedAddressMapping::<BlakeTwo256>::into_account_id(
+		H160::from_str(address).expect("invalid evm address"),
+	)
 }
 
 /// The extensions for the [`ChainSpec`].
@@ -80,12 +89,6 @@ pub fn get_from_seed<TPublic: Public>(seed: &str) -> <TPublic::Pair as Pair>::Pu
 }
 
 pub fn diora_local_config() -> ChainSpec {
-	// Give your base currency a unit name and decimal places
-	let mut properties = sc_chain_spec::Properties::new();
-	properties.insert("tokenSymbol".into(), "DIOR".into());
-	properties.insert("tokenDecimals".into(), 18.into());
-	properties.insert("ss58Format".into(), 42.into());
-
 	ChainSpec::from_genesis(
 		// Name
 		"Diora Local Testnet",
@@ -94,6 +97,8 @@ pub fn diora_local_config() -> ChainSpec {
 		ChainType::Local,
 		move || {
 			diora_genesis(
+				//sudo
+				get_account_id_from_seed::<sr25519::Public>("Alice"),
 				// initial collators.
 				vec![
 					(
@@ -109,17 +114,13 @@ pub fn diora_local_config() -> ChainSpec {
 				],
 				vec![
 					get_account_id_from_seed::<sr25519::Public>("Alice"),
-					get_account_id_from_seed::<sr25519::Public>("Bob"),
-					get_account_id_from_seed::<sr25519::Public>("Charlie"),
-					get_account_id_from_seed::<sr25519::Public>("Dave"),
-					get_account_id_from_seed::<sr25519::Public>("Eve"),
-					get_account_id_from_seed::<sr25519::Public>("Ferdie"),
 					get_account_id_from_seed::<sr25519::Public>("Alice//stash"),
+					get_account_id_from_seed::<sr25519::Public>("Bob"),
 					get_account_id_from_seed::<sr25519::Public>("Bob//stash"),
-					get_account_id_from_seed::<sr25519::Public>("Charlie//stash"),
-					get_account_id_from_seed::<sr25519::Public>("Dave//stash"),
-					get_account_id_from_seed::<sr25519::Public>("Eve//stash"),
-					get_account_id_from_seed::<sr25519::Public>("Ferdie//stash"),
+					// Developer
+					hex!["aea48c27a7f703a7f8acedf15b43e8fcbad0b7846e5fe32a0b2b75cb81d75306"].into(),
+					hex!["5070730422a430b8e25b0d8561714750b7a0ec8bc11726e1ac6518cbe9dc1e38"].into(),
+					get_account_id_from_evm_address("4597C97a43dFBb4a398E2b16AA9cE61f90d801DD"),
 				],
 				4202.into(),
 			)
@@ -133,7 +134,12 @@ pub fn diora_local_config() -> ChainSpec {
 		// Fork ID
 		None,
 		// Properties
-		Some(properties),
+		Some(
+			serde_json::from_str(
+				"{\"tokenDecimals\": 18, \"tokenSymbol\": \"DIOR\", \"SS58Prefix\": 42}",
+			)
+			.expect("Provided valid json map"),
+		),
 		// Extensions
 		Extensions {
 			relay_chain: "rococo-local".into(), // You MUST set this to the correct network!
@@ -143,12 +149,6 @@ pub fn diora_local_config() -> ChainSpec {
 }
 
 pub fn diora_rococo_config() -> ChainSpec {
-	// Give your base currency a unit name and decimal places
-	let mut properties = sc_chain_spec::Properties::new();
-	properties.insert("tokenSymbol".into(), "DIOR".into());
-	properties.insert("tokenDecimals".into(), 18.into());
-	properties.insert("ss58Format".into(), 42.into());
-
 	ChainSpec::from_genesis(
 		// Name
 		"Diora rococo",
@@ -157,6 +157,9 @@ pub fn diora_rococo_config() -> ChainSpec {
 		ChainType::Live,
 		move || {
 			diora_genesis(
+				// sudo key
+				// 5DtB6JvRdkzaCnozxs2x7qcqzJjut3WpXgEx7o6peqjwuPhA
+				hex!["5070730422a430b8e25b0d8561714750b7a0ec8bc11726e1ac6518cbe9dc1e38"].into(),
 				// initial collators.
 				vec![
 					(
@@ -190,6 +193,8 @@ pub fn diora_rococo_config() -> ChainSpec {
 					hex!["7cd8f5644cdb7d1e70ba38587f968b61be9eb69198037b7359bc545e2231d9cd"].into(),
 					// Developer
 					hex!["aea48c27a7f703a7f8acedf15b43e8fcbad0b7846e5fe32a0b2b75cb81d75306"].into(),
+					hex!["5070730422a430b8e25b0d8561714750b7a0ec8bc11726e1ac6518cbe9dc1e38"].into(),
+					get_account_id_from_evm_address("4597C97a43dFBb4a398E2b16AA9cE61f90d801DD"),
 				],
 				4202.into(),
 			)
@@ -203,7 +208,12 @@ pub fn diora_rococo_config() -> ChainSpec {
 		// Fork ID
 		None,
 		// Properties
-		Some(properties),
+		Some(
+			serde_json::from_str(
+				"{\"tokenDecimals\": 18, \"tokenSymbol\": \"DIOR\", \"SS58Prefix\": 42}",
+			)
+			.expect("Provided valid json map"),
+		),
 		// Extensions
 		Extensions {
 			relay_chain: "rococo".into(), // You MUST set this to the correct network!
@@ -241,6 +251,7 @@ pub fn diora_inflation_config() -> InflationInfo<Balance> {
 }
 
 fn diora_genesis(
+	sudo_key: AccountId,
 	candidates: Vec<(AccountId, NimbusId, Balance)>,
 	endowed_accounts: Vec<AccountId>,
 	id: ParaId,
@@ -249,13 +260,7 @@ fn diora_genesis(
 		system: SystemConfig {
 			code: WASM_BINARY.expect("WASM binary was not build, please build it!").to_vec(),
 		},
-		sudo: SudoConfig {
-			// Assign network admin rights.
-			key: Some(
-				// 5G1h51S53gWS4ARhRjgNAW1jQcvX4gY2GP8G7DaBh6RmVsQC
-				hex!["5ccd918cbf5e1d876641b5967b943a659e7a0ef415ca677ec457160a21a4ad7e"].into(),
-			),
-		},
+		sudo: SudoConfig { key: Some(sudo_key) },
 		balances: BalancesConfig {
 			balances: endowed_accounts.iter().cloned().map(|k| (k, 50_00000 * DIOR)).collect(),
 		},
