@@ -53,7 +53,10 @@ use fc_rpc_core::types::{FeeHistoryCache, FilterPool};
 use maplit::hashmap;
 use sc_consensus::ImportQueue;
 use sc_service::{config::PrometheusConfig, BasePath};
+use sp_runtime::Percent;
 use std::{collections::BTreeMap, sync::Mutex};
+
+pub const SOFT_DEADLINE_PERCENT: Percent = Percent::from_percent(100);
 
 /// Native executor instance.
 pub struct DioraRuntimeExecutor;
@@ -72,7 +75,7 @@ impl sc_executor::NativeExecutionDispatch for DioraRuntimeExecutor {
 
 type FullClient = TFullClient<Block, RuntimeApi, NativeElseWasmExecutor<DioraRuntimeExecutor>>;
 type FullBackend = TFullBackend<Block>;
-type FullSelectChain = sc_consensus::LongestChain<FullBackend, Block>;
+type FullSelectChain = Option<sc_consensus::LongestChain<FullBackend, Block>>;
 
 pub fn frontier_database_dir(config: &Configuration, path: &str) -> std::path::PathBuf {
 	let config_dir = config
@@ -120,7 +123,7 @@ fn set_prometheus_registry(config: &mut Configuration) -> Result<(), ServiceErro
 		let labels = hashmap! {
 			"chain".into() => config.chain_spec.id().into(),
 		};
-		*registry = Registry::new_custom(Some("frontier".into()), Some(labels))?;
+		*registry = Registry::new_custom(Some("diora".into()), Some(labels))?;
 	}
 
 	Ok(())
@@ -151,11 +154,10 @@ pub fn new_partial(
 	>,
 	sc_service::Error,
 > {
-	if config.keystore_remote.is_some() {
-		return Err(ServiceError::Other("Remote Keystores are not supported.".into()));
-	}
-
 	set_prometheus_registry(config)?;
+
+	// Use ethereum style for subscription ids
+	config.rpc_id_provider = Some(Box::new(fc_rpc::EthereumSubIdProvider));
 
 	let telemetry = config
 		.telemetry_endpoints
@@ -168,7 +170,7 @@ pub fn new_partial(
 		})
 		.transpose()?;
 
-	let executor = sc_executor::NativeElseWasmExecutor::<DioraRuntimeExecutor>::new(
+	let executor = NativeElseWasmExecutor::<DioraRuntimeExecutor>::new(
 		config.wasm_method,
 		config.default_heap_pages,
 		config.max_runtime_instances,
@@ -189,10 +191,6 @@ pub fn new_partial(
 		task_manager.spawn_handle().spawn("telemetry", None, worker.run());
 		telemetry
 	});
-
-	// Although this will not be used by the parachain collator, it will be used by the instant seal
-	// And sovereign nodes, so we create it anyway.
-	let select_chain = sc_consensus::LongestChain::new(backend.clone());
 
 	let transaction_pool = sc_transaction_pool::BasicPool::new_full(
 		config.transaction_pool.clone(),
@@ -223,13 +221,13 @@ pub fn new_partial(
 	)?;
 
 	Ok(PartialComponents {
-		client,
 		backend,
-		task_manager,
+		client,
 		import_queue,
 		keystore_container,
-		select_chain,
+		task_manager,
 		transaction_pool,
+		select_chain: None,
 		other: (
 			frontier_block_import,
 			filter_pool,
@@ -245,23 +243,17 @@ pub fn new_partial(
 ///
 /// This is the actual implementation that is abstract over the executor and the runtime api.
 #[sc_tracing::logging::prefix_logs_with("Parachain")]
-async fn start_node_impl<RB, BIC>(
+async fn start_node_impl<BIC>(
 	parachain_config: Configuration,
 	polkadot_config: Configuration,
 	collator_options: CollatorOptions,
 	id: ParaId,
 	hwbench: Option<sc_sysinfo::HwBench>,
-	_rpc_ext_builder: RB,
 	build_consensus: BIC,
 ) -> sc_service::error::Result<(TaskManager, Arc<FullClient>)>
 where
 	sc_client_api::StateBackendFor<TFullBackend<Block>, Block>: sp_api::StateBackend<BlakeTwo256>,
 	DioraRuntimeExecutor: sc_executor::NativeExecutionDispatch + 'static,
-	RB: Fn(
-			Arc<TFullClient<Block, RuntimeApi, DioraRuntimeExecutor>>,
-		) -> Result<jsonrpsee::RpcModule<()>, sc_service::Error>
-		+ Send
-		+ 'static,
 	BIC: FnOnce(
 		Arc<FullClient>,
 		Arc<sc_client_db::Backend<Block>>,
@@ -298,7 +290,7 @@ where
 		telemetry_worker_handle,
 		&mut task_manager,
 		collator_options.clone(),
-		hwbench,
+		hwbench.clone(),
 	)
 	.await
 	.map_err(|e| sc_service::Error::Application(Box::new(e) as Box<_>))?;
@@ -323,8 +315,6 @@ where
 			warp_sync: None,
 		})?;
 
-	// let subscription_task_executor =
-	//     sc_rpc::SubscriptionTaskExecutor::new(task_manager.spawn_handle());
 	let overrides = crate::rpc::overrides_handle(client.clone());
 	let fee_history_limit = 2048;
 
@@ -393,6 +383,19 @@ where
 		telemetry: telemetry.as_mut(),
 	})?;
 
+	if let Some(hwbench) = hwbench {
+		sc_sysinfo::print_hwbench(&hwbench);
+
+		if let Some(ref mut telemetry) = telemetry {
+			let telemetry_handle = telemetry.handle();
+			task_manager.spawn_handle().spawn(
+				"telemetry_hwbench",
+				None,
+				sc_sysinfo::initialize_hwbench_telemetry(telemetry_handle, hwbench),
+			);
+		}
+	}
+
 	let announce_block = {
 		let network = network.clone();
 		Arc::new(move |hash, data| network.announce_block(hash, data))
@@ -426,7 +429,8 @@ where
 			spawner,
 			parachain_consensus,
 			import_queue: import_queue_service,
-			collator_key: collator_key.expect("Command line arguments do not allow this. qed"),
+			collator_key: collator_key
+				.ok_or(sc_service::error::Error::Other("Collator Key is None".to_string()))?,
 			relay_chain_slot_duration,
 		};
 
@@ -467,7 +471,6 @@ pub async fn start_parachain_node(
 		collator_options,
 		id,
 		hwbench,
-		|_| Ok(jsonrpsee::RpcModule::new(())),
 		|client,
 		 backend,
 		 prometheus_registry,
@@ -478,13 +481,14 @@ pub async fn start_parachain_node(
 		 _sync_oracle,
 		 keystore,
 		 force_authoring| {
-			let proposer_factory = sc_basic_authorship::ProposerFactory::with_proof_recording(
+			let mut proposer_factory = sc_basic_authorship::ProposerFactory::with_proof_recording(
 				task_manager.spawn_handle(),
 				client.clone(),
 				transaction_pool,
 				prometheus_registry,
 				telemetry.clone(),
 			);
+			proposer_factory.set_soft_deadline(SOFT_DEADLINE_PERCENT);
 
 			let provider = move |_, (relay_parent, validation_data, _author_id)| {
 				let relay_chain_interface = relay_chain_interface.clone();
@@ -506,9 +510,12 @@ pub async fn start_parachain_node(
 						)
 					})?;
 
-					let nimbus_inherent = nimbus_primitives::InherentDataProvider;
+					let author = nimbus_primitives::InherentDataProvider;
 
-					Ok((time, parachain_inherent, nimbus_inherent))
+					// randomness
+					// let randomness = session_keys_primitives::InherentDataProvider;
+
+					Ok((time, parachain_inherent, author))
 				}
 			};
 
@@ -517,7 +524,7 @@ pub async fn start_parachain_node(
 				proposer_factory,
 				block_import: client.clone(),
 				backend,
-				parachain_client: client.clone(),
+				parachain_client: client,
 				keystore,
 				skip_prediction: force_authoring,
 				create_inherent_data_providers: provider,
