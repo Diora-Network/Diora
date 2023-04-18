@@ -26,7 +26,7 @@ include!(concat!(env!("OUT_DIR"), "/wasm_binary.rs"));
 
 use codec::{Decode, Encode, MaxEncodedLen};
 use sp_api::impl_runtime_apis;
-use sp_core::{crypto::KeyTypeId, ConstU8, OpaqueMetadata};
+use sp_core::{crypto::KeyTypeId, ConstU8, Get, OpaqueMetadata};
 use sp_runtime::{
 	create_runtime_str, generic, impl_opaque_keys,
 	traits::{AccountIdLookup, BlakeTwo256, Block as BlockT, IdentifyAccount, Verify},
@@ -83,14 +83,14 @@ pub use constants::currency::*;
 
 // EVM
 use fp_rpc::TransactionStatus;
-use frame_support::traits::{Imbalance, Nothing};
+use frame_support::traits::{Currency, Imbalance, Nothing};
 use pallet_ethereum::{Call::transact, Transaction as EthereumTransaction};
 use pallet_evm::{
 	Account as EVMAccount, EnsureAddressNever, EnsureAddressRoot, FeeCalculator,
 	HashedAddressMapping, Runner,
 };
 use sp_core::{H160, H256, U256};
-use sp_runtime::traits::{DispatchInfoOf, Dispatchable, PostDispatchInfoOf};
+use sp_runtime::traits::{AccountIdConversion, DispatchInfoOf, Dispatchable, PostDispatchInfoOf};
 
 mod precompiles;
 pub use precompiles::DioraPrecompiles;
@@ -380,7 +380,7 @@ parameter_types! {
 impl pallet_timestamp::Config for Runtime {
 	/// A timestamp: milliseconds since the unix epoch.
 	type Moment = u64;
-	type OnTimestampSet = ();
+	type OnTimestampSet = BlockReward;
 	type MinimumPeriod = MinimumPeriod;
 	type WeightInfo = ();
 }
@@ -973,6 +973,56 @@ impl<AccountId> Default for SmartContract<AccountId> {
 	}
 }
 
+parameter_types! {
+	pub const PotId: PalletId = PalletId(*b"PotStake");
+	pub TreasuryAccountId: AccountId = TreasuryPalletId::get().into_account_truncating();
+}
+
+type DNegativeImbalance = <Balances as Currency<AccountId>>::NegativeImbalance;
+
+pub struct ToStakingPot;
+impl OnUnbalanced<DNegativeImbalance> for ToStakingPot {
+	fn on_nonzero_unbalanced(amount: DNegativeImbalance) {
+		let staking_pot = PotId::get().into_account_truncating();
+		Balances::resolve_creating(&staking_pot, amount);
+	}
+}
+
+pub struct DappsStakingTvlProvider();
+impl Get<Balance> for DappsStakingTvlProvider {
+	fn get() -> Balance {
+		DappsStaking::tvl()
+	}
+}
+
+pub struct BeneficiaryPayout();
+impl pallet_block_reward::BeneficiaryPayout<DNegativeImbalance> for BeneficiaryPayout {
+	fn treasury(reward: DNegativeImbalance) {
+		Balances::resolve_creating(&TreasuryPalletId::get().into_account_truncating(), reward);
+	}
+
+	fn collators(reward: DNegativeImbalance) {
+		ToStakingPot::on_unbalanced(reward);
+	}
+
+	fn dapps_staking(stakers: DNegativeImbalance, dapps: DNegativeImbalance) {
+		DappsStaking::rewards(stakers, dapps)
+	}
+}
+
+parameter_types! {
+	pub const RewardAmount: Balance = 253_080 * MILLIDIOR;
+}
+
+impl pallet_block_reward::Config for Runtime {
+	type Currency = Balances;
+	type DappsStakingTvlProvider = DappsStakingTvlProvider;
+	type BeneficiaryPayout = BeneficiaryPayout;
+	type RewardAmount = RewardAmount;
+	type RuntimeEvent = RuntimeEvent;
+	type WeightInfo = pallet_block_reward::weights::SubstrateWeight<Runtime>;
+}
+
 impl pallet_sudo::Config for Runtime {
 	type RuntimeEvent = RuntimeEvent;
 	type RuntimeCall = RuntimeCall;
@@ -993,46 +1043,43 @@ construct_runtime!(
 		UncheckedExtrinsic = UncheckedExtrinsic,
 	{
 		// System support stuff.
-		System: frame_system::{Pallet, Call, Config, Storage, Event<T>} = 0,
-		ParachainSystem: cumulus_pallet_parachain_system::{
-			Pallet, Call, Config, Storage, Inherent, Event<T>, ValidateUnsigned,
-		} = 1,
-		RandomnessCollectiveFlip: pallet_randomness_collective_flip::{Pallet, Storage} = 2,
-		Timestamp: pallet_timestamp::{Pallet, Call, Storage, Inherent} = 3,
-		ParachainInfo: parachain_info::{Pallet, Storage, Config} = 4,
-		Utility: pallet_utility::{Pallet, Call, Storage, Event} = 5,
-		Sudo: pallet_sudo::{Pallet, Call, Config<T>, Storage, Event<T>} = 6,
-		Scheduler: pallet_scheduler::{Pallet, Call, Storage, Event<T>} = 7,
-		Preimage: pallet_preimage::{Pallet, Call, Storage, Event<T>} = 8,
-
-		// Monetary stuff.
-		Balances: pallet_balances::{Pallet, Call, Storage, Config<T>, Event<T>} = 10,
-		TransactionPayment: pallet_transaction_payment::{Pallet, Storage,Event<T>} = 11,
-
-		// Nimbus support. The order of these are important and shall not change.
-		ParachainStaking: parachain_staking::{Pallet, Call, Storage, Event<T>, Config<T>} = 20,
-		AuthorInherent: pallet_author_inherent::{Pallet, Call, Storage, Inherent} = 21,
-		AuthorFilter: pallet_author_slot_filter::{Pallet, Storage, Event, Config} = 22,
-		// PotentialAuthorSet: pallet_account_set::{Pallet, Storage, Config<T>} = 23,
-		DappsStaking: pallet_dapps_staking::{Pallet, Call, Storage, Event<T>} = 24,
-		AuthorMapping: pallet_author_mapping::{Pallet, Call, Config<T>, Storage, Event<T>} = 25,
-
-		// XCM helpers.
-		XcmpQueue: cumulus_pallet_xcmp_queue::{Pallet, Call, Storage, Event<T>} = 30,
-		PolkadotXcm: pallet_xcm::{Pallet, Call, Event<T>, Origin} = 31,
-		CumulusXcm: cumulus_pallet_xcm::{Pallet, Event<T>, Origin} = 32,
-		DmpQueue: cumulus_pallet_dmp_queue::{Pallet, Call, Storage, Event<T>} = 33,
-
-		// Ethereum compatibility
-		EthereumChainId: pallet_ethereum_chain_id::{Pallet, Call, Storage, Config} = 50,
-		Evm: pallet_evm::{Pallet, Config, Call, Storage, Event<T>} = 51,
-		Ethereum: pallet_ethereum::{Pallet, Call, Storage, Event, Config, Origin} = 52,
+		System: frame_system = 0,
+		ParachainSystem: cumulus_pallet_parachain_system = 1,
+		RandomnessCollectiveFlip: pallet_randomness_collective_flip = 2,
+		Timestamp: pallet_timestamp = 3,
+		ParachainInfo: parachain_info = 4,
+		Utility: pallet_utility = 5,
+		Balances: pallet_balances = 6,
+		TransactionPayment: pallet_transaction_payment = 7,
 
 		// Governance stuff.
-		Democracy: pallet_democracy::{Pallet, Call, Storage, Config<T>, Event<T>} = 60,
-		Council: pallet_collective::<Instance1>::{Pallet, Call, Storage, Origin<T>, Event<T>, Config<T>} = 61,
-		TechnicalCommittee: pallet_collective::<Instance2>::{Pallet, Call, Storage, Origin<T>, Event<T>, Config<T>} = 62,
-		Treasury: pallet_treasury::{Pallet, Call, Storage, Config, Event<T>} = 65,
+		Democracy: pallet_democracy = 10,
+		Council: pallet_collective::<Instance1> = 11,
+		TechnicalCommittee: pallet_collective::<Instance2> = 12,
+		Treasury: pallet_treasury = 13,
+		Sudo: pallet_sudo = 14,
+		Scheduler: pallet_scheduler = 15,
+		Preimage: pallet_preimage = 16,
+
+		// XCM helpers.
+		XcmpQueue: cumulus_pallet_xcmp_queue = 20,
+		PolkadotXcm: pallet_xcm = 21,
+		CumulusXcm: cumulus_pallet_xcm = 22,
+		DmpQueue: cumulus_pallet_dmp_queue = 23,
+
+		// Ethereum compatibility
+		EthereumChainId: pallet_ethereum_chain_id = 30,
+		Evm: pallet_evm = 31,
+		Ethereum: pallet_ethereum = 32,
+
+		// Diora pallets
+		ParachainStaking: parachain_staking = 40,
+		AuthorInherent: pallet_author_inherent = 41,
+		AuthorFilter: pallet_author_slot_filter = 42,
+		DappsStaking: pallet_dapps_staking = 43,
+		AuthorMapping: pallet_author_mapping = 44,
+		BlockReward: pallet_block_reward = 45,
+
 	}
 );
 

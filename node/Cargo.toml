@@ -33,6 +33,7 @@ pallet-author-inherent = { git = "https://github.com/Diora-Network/nimbus", bran
 
 diora-runtime = { path = "../runtime" }
 session-keys-primitives = { path = "../primitives/session-keys" }
+pallet-block-reward = { path = "../pallets/block-reward" }
 
 # Substrate Dependencies
 frame-benchmarking = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.38" }

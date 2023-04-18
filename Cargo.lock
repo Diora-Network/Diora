@@ -2169,6 +2169,7 @@ dependencies = [
  "nimbus-consensus",
  "nimbus-primitives",
  "pallet-author-inherent",
+ "pallet-block-reward",
  "pallet-ethereum",
  "pallet-evm",
  "pallet-transaction-payment-rpc",
@@ -2241,6 +2242,7 @@ dependencies = [
  "pallet-author-slot-filter",
  "pallet-balances",
  "pallet-base-fee",
+ "pallet-block-reward",
  "pallet-collator-selection",
  "pallet-collective",
  "pallet-dapps-staking",
@@ -6181,6 +6183,24 @@ dependencies = [
  "sp-beefy",
  "sp-core",
  "sp-io",
+ "sp-runtime",
+ "sp-std",
+]
+
+[[package]]
+name = "pallet-block-reward"
+version = "3.9.0"
+dependencies = [
+ "frame-benchmarking",
+ "frame-support",
+ "frame-system",
+ "pallet-balances",
+ "pallet-timestamp",
+ "parity-scale-codec",
+ "scale-info",
+ "serde",
+ "sp-arithmetic",
+ "sp-core",
  "sp-runtime",
  "sp-std",
 ]

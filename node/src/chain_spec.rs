@@ -19,10 +19,10 @@
 use cumulus_primitives_core::ParaId;
 use diora_runtime::{
 	constants::currency::{DIOR, SUPPLY_FACTOR},
-	AccountId, AuthorFilterConfig, AuthorMappingConfig, Balance, BalancesConfig, EligibilityValue,
-	EthereumChainIdConfig, GenesisConfig, InflationInfo, NimbusId, ParachainInfoConfig,
-	ParachainStakingConfig, Perbill, Range, Signature, SudoConfig, SystemConfig, HOURS,
-	WASM_BINARY,
+	AccountId, AuthorFilterConfig, AuthorMappingConfig, Balance, BalancesConfig, BlockRewardConfig,
+	EligibilityValue, EthereumChainIdConfig, GenesisConfig, InflationInfo, NimbusId,
+	ParachainInfoConfig, ParachainStakingConfig, Perbill, Range, Signature, SudoConfig,
+	SystemConfig, HOURS, WASM_BINARY,
 };
 use hex_literal::hex;
 use pallet_evm::{AddressMapping, HashedAddressMapping};
@@ -273,6 +273,8 @@ fn diora_genesis(
 		democracy: Default::default(),
 		technical_committee: Default::default(),
 		treasury: Default::default(),
+		transaction_payment: Default::default(),
+		polkadot_xcm: Default::default(),
 		parachain_staking: ParachainStakingConfig {
 			candidates: candidates
 				.iter()
@@ -285,6 +287,17 @@ fn diora_genesis(
 			parachain_bond_reserve_percent: PARACHAIN_BOND_RESERVE_PERCENT,
 			blocks_per_round: BLOCKS_PER_ROUND,
 			num_selected_candidates: NUM_SELECTED_CANDIDATES,
+		},
+		block_reward: BlockRewardConfig {
+			// Make sure sum is 100
+			reward_config: pallet_block_reward::RewardDistributionConfig {
+				base_treasury_percent: Perbill::from_percent(10),
+				base_staker_percent: Perbill::from_percent(20),
+				dapps_percent: Perbill::from_percent(20),
+				collators_percent: Perbill::from_percent(5),
+				adjustable_percent: Perbill::from_percent(45),
+				ideal_dapps_staking_tvl: Perbill::from_percent(40),
+			},
 		},
 		author_mapping: AuthorMappingConfig {
 			mappings: candidates
