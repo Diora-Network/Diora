@@ -1145,6 +1145,17 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "e496a50fda8aacccc86d7529e2c1e0892dbd0f898a6b5645b5561b89c3210efa"
 
 [[package]]
+name = "core-primitives"
+version = "0.1.0"
+dependencies = [
+ "nimbus-primitives",
+ "parity-scale-codec",
+ "scale-info",
+ "sp-application-crypto",
+ "sp-runtime",
+]
+
+[[package]]
 name = "core2"
 version = "0.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2220,6 +2231,7 @@ dependencies = [
 name = "diora-runtime"
 version = "0.9.38"
 dependencies = [
+ "core-primitives",
  "cumulus-pallet-dmp-queue",
  "cumulus-pallet-parachain-system",
  "cumulus-pallet-xcm",
@@ -2256,6 +2268,7 @@ dependencies = [
  "pallet-evm-precompile-modexp",
  "pallet-evm-precompile-sha3fips",
  "pallet-evm-precompile-simple",
+ "pallet-identity",
  "pallet-preimage",
  "pallet-randomness-collective-flip",
  "pallet-scheduler",

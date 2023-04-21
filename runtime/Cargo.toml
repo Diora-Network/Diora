@@ -69,6 +69,7 @@ pallet-author-slot-filter = { git = "https://github.com/Diora-Network/nimbus", b
 pallet-author-mapping = { path = "../pallets/author-mapping", default-features = false }
 pallet-ethereum-chain-id = { path = "../pallets/ethereum-chain-id", default-features = false }
 session-keys-primitives = { path = "../primitives/session-keys", default-features = false }
+core-primitives = { path = "../primitives/core", default-features = false }
 
 # Frontier Dependencies
 fp-rpc = { git = "https://github.com/Diora-Network/frontier", branch = "polkadot-v0.9.38", default-features = false }
@@ -96,6 +97,7 @@ pallet-collective = { git = "https://github.com/paritytech/substrate", branch = 
 pallet-democracy = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.38", default-features = false }
 pallet-treasury = { git = 'https://github.com/paritytech/substrate', branch = "polkadot-v0.9.38", default-features = false }
 pallet-preimage = { git = 'https://github.com/paritytech/substrate', branch = "polkadot-v0.9.38", default-features = false }
+pallet-identity = { git = 'https://github.com/paritytech/substrate', branch = "polkadot-v0.9.38", default-features = false }
 
 [build-dependencies]
 substrate-wasm-builder = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.38" }
@@ -128,6 +130,7 @@ std = [
 	"pallet-sudo/std",
 	"pallet-scheduler/std",
 	"pallet-preimage/std",
+	"pallet-identity/std",
 	"pallet-utility/std",
 	"pallet-timestamp/std",
 	"pallet-transaction-payment-rpc-runtime-api/std",
@@ -162,6 +165,7 @@ std = [
 	"pallet-democracy/std",
 	"pallet-treasury/std",
 	"session-keys-primitives/std",
+	"core-primitives/std",
 	"pallet-author-mapping/std",
 ]
 

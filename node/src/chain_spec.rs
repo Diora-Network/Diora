@@ -18,11 +18,10 @@
 
 use cumulus_primitives_core::ParaId;
 use diora_runtime::{
-	constants::currency::{DIOR, SUPPLY_FACTOR},
 	AccountId, AuthorFilterConfig, AuthorMappingConfig, Balance, BalancesConfig, BlockRewardConfig,
 	EligibilityValue, EthereumChainIdConfig, GenesisConfig, InflationInfo, NimbusId,
 	ParachainInfoConfig, ParachainStakingConfig, Perbill, Range, Signature, SudoConfig,
-	SystemConfig, HOURS, WASM_BINARY,
+	SystemConfig, DIOR, HOURS, SUPPLY_FACTOR, WASM_BINARY,
 };
 use hex_literal::hex;
 use pallet_evm::{AddressMapping, HashedAddressMapping};
