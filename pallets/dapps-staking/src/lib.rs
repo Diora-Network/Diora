@@ -25,7 +25,7 @@
 //! Pallet that implements dapps staking protocol.
 //!
 //! Dapps staking protocol is a completely decentralized & innovative approach to reward developers
-//! for their contribution to the Astar/Shiden ecosystem. Stakers can pick a dapp and nominate it
+//! for their contribution to the Diora ecosystem. Stakers can pick a dapp and nominate it
 //! for rewards by locking their tokens. Dapps will be rewarded, based on the proportion of locked
 //! tokens. Stakers are also rewarded, based on the total amount they've locked (invariant of the
 //! dapp they staked on).

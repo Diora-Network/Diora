@@ -36,7 +36,7 @@ use sp_runtime::{
 
 pub use nimbus_primitives::{AccountLookup, CanAuthor, NimbusId};
 pub use pallet_author_slot_filter::EligibilityValue;
-pub use parachain_staking::{inflation, InflationInfo, Range};
+pub use pallet_parachain_staking::{inflation, InflationInfo, Range};
 use sp_std::prelude::*;
 #[cfg(feature = "std")]
 use sp_version::NativeVersion;
@@ -80,6 +80,8 @@ use sp_runtime::traits::{AccountIdConversion, DispatchInfoOf, Dispatchable, Post
 
 mod precompiles;
 pub use precompiles::DioraPrecompiles;
+
+pub type Precompiles = DioraPrecompiles<Runtime>;
 
 mod xcm_config;
 
@@ -620,7 +622,7 @@ parameter_types! {
 	pub const DefaultParachainBondReservePercent: Percent = Percent::from_percent(30);
 }
 
-impl parachain_staking::Config for Runtime {
+impl pallet_parachain_staking::Config for Runtime {
 	type RuntimeEvent = RuntimeEvent;
 	type Currency = Balances;
 	type MonetaryGovernanceOrigin = EnsureRoot<AccountId>;
@@ -654,7 +656,7 @@ impl parachain_staking::Config for Runtime {
 	type MinDelegation = ConstU128<{ 125 * MILLIDIOR * SUPPLY_FACTOR }>;
 	/// Minimum stake required to be reserved to be a delegator
 	type MinDelegatorStk = ConstU128<{ 125 * MILLIDIOR * SUPPLY_FACTOR }>;
-	type WeightInfo = parachain_staking::weights::SubstrateWeight<Runtime>;
+	type WeightInfo = pallet_parachain_staking::weights::SubstrateWeight<Runtime>;
 	type BlockAuthor = AuthorInherent;
 	type PayoutCollatorReward = ();
 	type OnNewRound = ();
@@ -678,7 +680,6 @@ impl pallet_dapps_staking::Config for Runtime {
 	type UnbondingPeriod = ConstU32<10>;
 	type MinimumRemainingAmount = ConstU128<{ 1 * DIOR }>;
 	type MaxEraStakeValues = ConstU32<5>;
-	// Not allowed on Astar yet
 	type UnregisteredDappRewardRetention = ConstU32<{ u32::MAX }>;
 }
 
@@ -782,11 +783,11 @@ construct_runtime!(
 
 		// Ethereum compatibility
 		EthereumChainId: pallet_ethereum_chain_id = 30,
-		Evm: pallet_evm = 31,
+		EVM: pallet_evm = 31,
 		Ethereum: pallet_ethereum = 32,
 
 		// Diora pallets
-		ParachainStaking: parachain_staking = 40,
+		ParachainStaking: pallet_parachain_staking = 40,
 		AuthorInherent: pallet_author_inherent = 41,
 		AuthorFilter: pallet_author_slot_filter = 42,
 		DappsStaking: pallet_dapps_staking = 43,
@@ -890,7 +891,7 @@ impl_runtime_apis! {
 		}
 
 		fn account_basic(address: H160) -> EVMAccount {
-			let (account, _) = Evm::account_basic(&address);
+			let (account, _) = EVM::account_basic(&address);
 			account
 		}
 
@@ -900,7 +901,7 @@ impl_runtime_apis! {
 		}
 
 		fn account_code_at(address: H160) -> Vec<u8> {
-			Evm::account_codes(address)
+			EVM::account_codes(address)
 		}
 
 		fn author() -> H160 {
@@ -910,7 +911,7 @@ impl_runtime_apis! {
 		fn storage_at(address: H160, index: U256) -> H256 {
 			let mut tmp = [0u8; 32];
 			index.to_big_endian(&mut tmp);
-			Evm::account_storages(address, H256::from_slice(&tmp[..]))
+			EVM::account_storages(address, H256::from_slice(&tmp[..]))
 		}
 
 		fn call(
@@ -1161,7 +1162,7 @@ impl_runtime_apis! {
 					// of the first block in the new round, the only way to accurately predict the
 					// authors is to compute the selection during prediction.
 					use nimbus_primitives::AccountLookup;
-					if parachain_staking::Pallet::<Self>::round().should_update(block_number) {
+					if pallet_parachain_staking::Pallet::<Self>::round().should_update(block_number) {
 						let author_account_id = if let Some(account) =
 							AuthorMapping::lookup_account(&author) {
 							account
@@ -1172,7 +1173,7 @@ impl_runtime_apis! {
 						// predict eligibility post-selection by computing selection results now
 						let (eligible, _) =
 							pallet_author_slot_filter::compute_pseudo_random_subset::<Self>(
-								parachain_staking::Pallet::<Self>::compute_top_candidates(),
+								pallet_parachain_staking::Pallet::<Self>::compute_top_candidates(),
 								&slot
 							);
 						eligible.contains(&author_account_id)

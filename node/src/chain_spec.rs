@@ -19,9 +19,9 @@
 use cumulus_primitives_core::ParaId;
 use diora_runtime::{
 	AccountId, AuthorFilterConfig, AuthorMappingConfig, Balance, BalancesConfig, BlockRewardConfig,
-	EligibilityValue, EthereumChainIdConfig, GenesisConfig, InflationInfo, NimbusId,
-	ParachainInfoConfig, ParachainStakingConfig, Perbill, Range, Signature, SudoConfig,
-	SystemConfig, DIOR, HOURS, SUPPLY_FACTOR, WASM_BINARY,
+	EVMConfig, EligibilityValue, EthereumChainIdConfig, GenesisConfig, InflationInfo, NimbusId,
+	ParachainInfoConfig, ParachainStakingConfig, Perbill, Precompiles, Range, Signature,
+	SudoConfig, SystemConfig, DIOR, HOURS, SUPPLY_FACTOR, WASM_BINARY,
 };
 use hex_literal::hex;
 use pallet_evm::{AddressMapping, HashedAddressMapping};
@@ -255,6 +255,12 @@ fn diora_genesis(
 	endowed_accounts: Vec<AccountId>,
 	id: ParaId,
 ) -> GenesisConfig {
+	// This is the simplest bytecode to revert without returning any data.
+	// We will pre-deploy it under all of our precompiles to ensure they can be called from
+	// within contracts.
+	// (PUSH1 0x00 PUSH1 0x00 REVERT)
+	let revert_bytecode = vec![0x60, 0x00, 0x60, 0x00, 0xFD];
+
 	GenesisConfig {
 		system: SystemConfig {
 			code: WASM_BINARY.expect("WASM binary was not build, please build it!").to_vec(),
@@ -266,7 +272,23 @@ fn diora_genesis(
 		parachain_info: ParachainInfoConfig { parachain_id: id },
 		parachain_system: Default::default(),
 		ethereum_chain_id: EthereumChainIdConfig { chain_id: 201u64 },
-		evm: Default::default(),
+		evm: EVMConfig {
+			// We need _some_ code inserted at the precompile address so that
+			// the evm will actually call the address.
+			accounts: Precompiles::used_addresses()
+				.map(|addr| {
+					(
+						addr,
+						fp_evm::GenesisAccount {
+							nonce: Default::default(),
+							balance: Default::default(),
+							storage: Default::default(),
+							code: revert_bytecode.clone(),
+						},
+					)
+				})
+				.collect(),
+		},
 		ethereum: Default::default(),
 		council: Default::default(),
 		democracy: Default::default(),

@@ -23,21 +23,6 @@
 //! HOSTNAME: `devserver-01`, CPU: `Intel(R) Xeon(R) E-2236 CPU @ 3.40GHz`
 //! EXECUTION: Some(Wasm), WASM-EXECUTION: Compiled, CHAIN: Some("shibuya-dev"), DB CACHE: 1024
 
-// Executed Command:
-// ./target/release/astar-collator
-// benchmark
-// pallet
-// --chain=shibuya-dev
-// --steps=50
-// --repeat=20
-// --pallet=pallet_dapps_staking
-// --extrinsic=*
-// --execution=wasm
-// --wasm-execution=compiled
-// --heap-pages=4096
-// --output=./benchmark-results/dapps_staking_weights.rs
-// --template=./scripts/templates/weight-template.hbs
-
 #![cfg_attr(rustfmt, rustfmt_skip)]
 #![allow(unused_parens)]
 #![allow(unused_imports)]

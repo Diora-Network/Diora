@@ -106,6 +106,7 @@ fp-storage = { git = "https://github.com/Diora-Network/frontier", branch = "polk
 fc-consensus  = { git = "https://github.com/Diora-Network/frontier", branch = "polkadot-v0.9.38" }
 fc-rpc-core = { git = "https://github.com/Diora-Network/frontier", branch = "polkadot-v0.9.38" }
 fc-rpc = { git = "https://github.com/Diora-Network/frontier", branch = "polkadot-v0.9.38" }
+fp-evm = { git = "https://github.com/Diora-Network/frontier", branch = "polkadot-v0.9.38" }
 fc-mapping-sync = { git = "https://github.com/Diora-Network/frontier", branch = "polkadot-v0.9.38" }
 fc-db = { git = "https://github.com/Diora-Network/frontier", branch = "polkadot-v0.9.38" }
 pallet-ethereum = { git="https://github.com/Diora-Network/frontier", branch = "polkadot-v0.9.38" }

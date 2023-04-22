@@ -16,21 +16,6 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-// Executed Command:
-// ./target/release/astar-collator
-// benchmark
-// pallet
-// --chain=shibuya-dev
-// --steps=50
-// --repeat=20
-// --pallet=pallet_block_reward
-// --extrinsic=*
-// --execution=wasm
-// --wasm-execution=compiled
-// --heap-pages=4096
-// --output=./benchmark-results/block_reward_weights.rs
-// --template=./scripts/templates/weight-template.hbs
-
 #![cfg_attr(rustfmt, rustfmt_skip)]
 #![allow(unused_parens)]
 #![allow(unused_imports)]
