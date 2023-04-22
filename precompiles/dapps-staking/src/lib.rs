@@ -20,11 +20,6 @@
 
 #![cfg_attr(not(feature = "std"), no_std)]
 
-#[cfg(test)]
-mod mock;
-#[cfg(test)]
-mod tests;
-
 use codec::{Decode, Encode};
 use fp_evm::PrecompileHandle;
 use frame_support::{

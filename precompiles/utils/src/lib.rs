@@ -32,9 +32,6 @@ pub mod precompile_set;
 pub mod revert;
 pub mod substrate;
 
-#[cfg(feature = "testing")]
-pub mod testing;
-
 #[cfg(test)]
 mod tests;
 

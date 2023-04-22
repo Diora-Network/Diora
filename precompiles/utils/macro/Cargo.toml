@@ -8,10 +8,6 @@ version = "0.1.0"
 [lib]
 proc-macro = true
 
-[[test]]
-name = "tests"
-path = "tests/tests.rs"
-
 [dependencies]
 case = "1.0"
 num_enum = { version = "0.5.3", default-features = false }

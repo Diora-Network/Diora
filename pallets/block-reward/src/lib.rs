@@ -52,9 +52,8 @@
 //!         DappsStaking::total_locked_value()
 //!     }
 //! }
-//! ```
-//! 3. `BeneficiaryPayout` handler should be defined as an impl of `BeneficiaryPayout` trait. For
-//! example: ```nocompile
+//! 3. `BeneficiaryPayout` handler should be defined as an impl of `BeneficiaryPayout` trait.
+//! For example: ```nocompile
 //! pub struct BeneficiaryPayout();
 //! impl BeneficiaryPayout<NegativeImbalanceOf<T>> for BeneficiaryPayout {
 //!
@@ -70,7 +69,6 @@
 //!         DappsStaking::rewards(stakers, dapps);
 //!     }
 //! }
-//! ```
 //! 4. Set `RewardAmount` to desired block reward value in native currency.
 
 #![cfg_attr(not(feature = "std"), no_std)]

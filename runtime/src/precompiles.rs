@@ -82,8 +82,6 @@ type DioraPrecompilesAt<R> = (
 /// 2048-4095 Diora specific precompiles
 pub type DioraPrecompiles<R> = PrecompileSetBuilder<
 	R,
-	(
-		// Skip precompiles if out of range.
-		PrecompilesInRangeInclusive<(AddressU64<1>, AddressU64<4095>), DioraPrecompilesAt<R>>
-	),
+	// Skip precompiles if out of range.
+	PrecompilesInRangeInclusive<(AddressU64<1>, AddressU64<4095>), DioraPrecompilesAt<R>>,
 >;
