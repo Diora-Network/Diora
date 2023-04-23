@@ -689,7 +689,7 @@ impl pallet_dapps_staking::Config for Runtime {
 )]
 pub enum SmartContract<AccountId> {
 	/// EVM smart contract instance.
-	Evm(sp_core::H160),
+	Evm(H160),
 	/// Wasm smart contract instance.
 	Wasm(AccountId),
 }
@@ -701,19 +701,10 @@ impl<AccountId> Default for SmartContract<AccountId> {
 }
 
 parameter_types! {
-	pub const PotId: PalletId = PalletId(*b"PotStake");
 	pub TreasuryAccountId: AccountId = TreasuryPalletId::get().into_account_truncating();
 }
 
-type DNegativeImbalance = <Balances as Currency<AccountId>>::NegativeImbalance;
-
-pub struct ToStakingPot;
-impl OnUnbalanced<DNegativeImbalance> for ToStakingPot {
-	fn on_nonzero_unbalanced(amount: DNegativeImbalance) {
-		let staking_pot = PotId::get().into_account_truncating();
-		Balances::resolve_creating(&staking_pot, amount);
-	}
-}
+// type NegativeImbalance = <Balances as Currency<AccountId>>::NegativeImbalance;
 
 pub struct DappsStakingTvlProvider();
 impl Get<Balance> for DappsStakingTvlProvider {
@@ -723,16 +714,12 @@ impl Get<Balance> for DappsStakingTvlProvider {
 }
 
 pub struct BeneficiaryPayout();
-impl pallet_block_reward::BeneficiaryPayout<DNegativeImbalance> for BeneficiaryPayout {
-	fn treasury(reward: DNegativeImbalance) {
+impl pallet_block_reward::BeneficiaryPayout<NegativeImbalance<Runtime>> for BeneficiaryPayout {
+	fn treasury(reward: NegativeImbalance<Runtime>) {
 		Balances::resolve_creating(&TreasuryPalletId::get().into_account_truncating(), reward);
 	}
 
-	fn collators(reward: DNegativeImbalance) {
-		ToStakingPot::on_unbalanced(reward);
-	}
-
-	fn dapps_staking(stakers: DNegativeImbalance, dapps: DNegativeImbalance) {
+	fn dapps_staking(stakers: NegativeImbalance<Runtime>, dapps: NegativeImbalance<Runtime>) {
 		DappsStaking::rewards(stakers, dapps)
 	}
 }
