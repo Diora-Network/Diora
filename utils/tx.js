@@ -44,5 +44,5 @@ async function signAndSendTransactions() {
     }
   }
   
-  signAndSendTransactions();
+  signAndSendTransactions(); ai
   
